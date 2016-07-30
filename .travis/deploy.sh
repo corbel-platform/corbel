@@ -23,7 +23,7 @@ then
         echo "Not on a tag -> Keep snapshot version in pom.xml"
     fi
 
-    mvn clean deploy --settings .travis/settings.xml -DskipTests=true -B -U
+    mvn clean deploy --settings .travis/settings.xml -Dmaven.test.skip=true -B -U
 else
     echo "Not deploying dependant builds for ${TRAVIS_BRANCH}"
 fi

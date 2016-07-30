@@ -14,3 +14,6 @@ deploy:
       all_branches: true
       repo: corbel-platform/corbel
       jdk: oraclejdk8
+after_success:
+  - docker login-u $DOCKER_USER -p $DOCKER_PASS
+  - mvn install -Dmaven.test.skip=true -DdockerBuild=true -DpushImage -Ddocker.organization=devialab -Ddocker.name.prefix=corbel-
