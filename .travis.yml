@@ -1,3 +1,6 @@
+sudo: required
+services:
+  - docker
 language: java
 jdk:
   - oraclejdk8
@@ -6,6 +9,9 @@ install:
 before_install:
   - echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
   - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
+after_success:
+  - docker login-u $DOCKER_USER -p $DOCKER_PASS
+  - mvn install --settings .travis/settings.xml -Dmaven.test.skip=true -DdockerBuild=true -DpushImage -Ddocker.organization=devialab -Ddocker.name.prefix=corbel-
 deploy:
   -
     provider: script
@@ -14,6 +20,3 @@ deploy:
       all_branches: true
       repo: corbel-platform/corbel
       jdk: oraclejdk8
-after_success:
-  - docker login-u $DOCKER_USER -p $DOCKER_PASS
-  - mvn install -Dmaven.test.skip=true -DdockerBuild=true -DpushImage -Ddocker.organization=devialab -Ddocker.name.prefix=corbel-
