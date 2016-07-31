@@ -1,5 +1,4 @@
 .git
 Dockerfile
-codeship-services.yml
 .data
 node_modules
