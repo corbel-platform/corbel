@@ -23,7 +23,7 @@ then
         echo "Not on a tag -> Keep snapshot version in pom.xml"
     fi
 
-    mvn clean deploy --settings .travis/settings.xml -Dmaven.test.skip=true -B -U
+    mvn clean deploy --settings .travis/settings.xml -Dmaven.test.skip=true -DdockerBuild=true -DpushImage -Ddocker.organization=devialab -Ddocker.name.prefix=corbel- -B -U
 else
     echo "Not deploying dependant builds for ${TRAVIS_BRANCH}"
 fi
