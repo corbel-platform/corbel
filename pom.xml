@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.corbel</groupId>
     <artifactId>corbel</artifactId>
-    <version>1.32.0-SNAPSHOT</version>
+    <version>1.33.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>corbel</name>
 
@@ -78,7 +77,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <docker.files>${project.basedir}/../src/docker/service</docker.files>
         <docker.organization>corbel</docker.organization>
-        <docker.name.prefix/>
+        <docker.name.prefix />
     </properties>
 
     <modules>
@@ -542,11 +541,10 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <exec executable="chmod"
-                                          dir="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}">
-                                        <arg value="-R"/>
-                                        <arg value="a+x"/>
-                                        <arg value="bin"/>
+                                    <exec executable="chmod" dir="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}">
+                                        <arg value="-R" />
+                                        <arg value="a+x" />
+                                        <arg value="bin" />
                                     </exec>
                                 </target>
                             </configuration>
@@ -559,9 +557,8 @@
                             </goals>
                             <configuration>
                                 <target>
-                                    <exec executable="mkdir"
-                                          dir="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}">
-                                        <arg value="plugins"/>
+                                    <exec executable="mkdir" dir="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}">
+                                        <arg value="plugins" />
                                     </exec>
                                 </target>
                             </configuration>
