@@ -189,10 +189,10 @@ import static org.mockito.Mockito.*;
         String resourceId = "test";
         JsonObject jsonObject = new JsonObject();
         ResourceUri resourceUri = new ResourceUri(DOMAIN, TYPE, resourceId, RELATION_TYPE, RELATION_URI);
-        defaultResmiService.createRelation(resourceUri, jsonObject);
+        defaultResmiService.upsertRelation(resourceUri, jsonObject);
         assertThat(jsonObject.get(_CREATED_AT)).isNotNull();
         assertThat(jsonObject.get(_UPDATED_AT)).isNotNull();
-        verify(resmiDao).createRelation(resourceUri, jsonObject);
+        verify(resmiDao).upsertRelation(resourceUri, jsonObject);
     }
 
     private long extractMillis(String date) throws ParseException {
@@ -206,7 +206,7 @@ import static org.mockito.Mockito.*;
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("_test", new JsonPrimitive("123"));
         ResourceUri resourceUri = new ResourceUri(DOMAIN, TYPE, resourceId, RELATION_TYPE, RELATION_URI);
-        defaultResmiService.createRelation(resourceUri, jsonObject);
+        defaultResmiService.upsertRelation(resourceUri, jsonObject);
     }
 
     @Test

@@ -48,7 +48,10 @@ public interface ResmiService {
     JsonObject conditionalUpdateResource(ResourceUri uri, JsonObject object, List<ResourceQuery> resourceQueries)
             throws StartsWithUnderscoreException;
 
-    JsonObject createRelation(ResourceUri uri, JsonObject requestEntity) throws NotFoundException, StartsWithUnderscoreException;
+    JsonObject upsertRelation(ResourceUri uri, JsonObject requestEntity) throws NotFoundException, StartsWithUnderscoreException;
+
+    JsonObject condicionalUpdateRelation(ResourceUri uri, JsonObject requestEntity, List<ResourceQuery>
+            resourceQueries) throws StartsWithUnderscoreException;
 
     void moveRelation(ResourceUri uri, RelationMoveOperation relationMoveOperation);
 
