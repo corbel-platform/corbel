@@ -115,9 +115,10 @@ public class ResmiPutRem extends AbstractResmiRem {
                 if (result == null) {
                     return ErrorResponseFactory.getInstance().preconditionFailed("Condition not satisfied.");
                 }
+            } else {
+                resmiService.upsertRelation(resourceUri, entity.orElse(null));
             }
 
-            resmiService.upsertRelation(resourceUri, entity.orElse(null));
             return created();
         } catch (NotFoundException | UnsupportedEncodingException | IllegalArgumentException e) {
             return ErrorResponseFactory.getInstance()
