@@ -136,10 +136,10 @@ import io.dropwizard.auth.Auth;
     public Response putRelation(@PathParam("domain") String domain, @PathParam("type") String type, @PathParam("id") ResourceId id,
             @PathParam("rel") String rel,
             @Context Request request, @Context UriInfo uriInfo, @Auth AuthorizationInfo authorizationInfo,
-            @MatrixParam("r") String resource, InputStream inputStream, @HeaderParam("Content-Type") MediaType contentType) {
+            @MatrixParam("r") String resource, InputStream inputStream, @HeaderParam("Content-Type") MediaType
+                                            contentType, @Rest QueryParameters queryParameters) {
         return resourcesService.relationOperation(domain, type, id, rel, request, uriInfo, getTokenInfo(authorizationInfo), HttpMethod.PUT,
-                null,
-                resource, inputStream, contentType);
+                queryParameters, resource, inputStream, contentType);
     }
 
     @DELETE

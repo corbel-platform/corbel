@@ -178,7 +178,7 @@ public class ResmiPutRemTest extends ResmiRemTest {
         JsonObject json = new JsonObject();
         json.add("_b", new JsonPrimitive("2"));
 
-        doThrow(new StartsWithUnderscoreException("_b")).when(resmiServiceMock).createRelation(any(), eq(json));
+        doThrow(new StartsWithUnderscoreException("_b")).when(resmiServiceMock).upsertRelation(any(), eq(json));
 
         @SuppressWarnings("unchecked")
         Response response = putRem.relation(TEST_TYPE, TEST_ID, TEST_RELATION, getParameters(TEST_URI), Optional.ofNullable(json));

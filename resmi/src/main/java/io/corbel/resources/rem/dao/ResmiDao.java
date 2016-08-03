@@ -40,7 +40,7 @@ public interface ResmiDao {
 
     void saveResource(ResourceUri uri, Object entity);
 
-    void createRelation(ResourceUri uri, JsonObject jsonObject) throws NotFoundException;
+    void upsertRelation(ResourceUri uri, JsonObject jsonObject) throws NotFoundException;
 
     JsonObject deleteResource(ResourceUri uri);
 
@@ -67,6 +67,8 @@ public interface ResmiDao {
     void moveRelation(ResourceUri uri, RelationMoveOperation relationMoveOperation);
 
     <T> List<T> findAll(ResourceUri uri, Class<T> entityClass);
+
+    boolean conditionalUpdateRelation(ResourceUri uri, JsonObject entity, List<ResourceQuery> resourceQueries);
 
     void ensureExpireIndex(ResourceUri uri);
 
