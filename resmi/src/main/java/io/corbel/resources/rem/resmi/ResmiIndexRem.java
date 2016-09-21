@@ -42,6 +42,9 @@ public class ResmiIndexRem extends BaseRem<JsonObject> {
             } else {
                 MongoIndex mongoIndex = new MongoIndex();
                 fields.forEach(field -> mongoIndex.on(field.getAsString()));
+                if(object.has("unique") && object.get("unique").getAsBoolean()) {
+                    mongoIndex.unique();
+                }
                 indexDefinition = mongoIndex.getIndexDefinition();
             }
             resmiService.ensureIndex(resourceUri, indexDefinition);
