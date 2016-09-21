@@ -137,14 +137,26 @@ public class DefaultResmiService implements ResmiService {
     }
 
     @Override
-    public JsonObject createRelation(ResourceUri uri, JsonObject requestEntity) throws NotFoundException, StartsWithUnderscoreException {
+    public JsonObject upsertRelation(ResourceUri uri, JsonObject requestEntity) throws NotFoundException, StartsWithUnderscoreException {
         if (requestEntity == null) {
             requestEntity = new JsonObject();
         }
         verifyNotUnderscore(requestEntity);
         createDates(requestEntity);
-        resmiDao.createRelation(uri, requestEntity);
+        resmiDao.upsertRelation(uri, requestEntity);
         return requestEntity;
+    }
+
+    @Override
+    public JsonObject condicionalUpdateRelation(ResourceUri uri, JsonObject requestEntity, List<ResourceQuery>
+            resourceQueries) throws StartsWithUnderscoreException {
+        verifyNotUnderscore(requestEntity);
+        updateDates(requestEntity);
+        boolean found = resmiDao.conditionalUpdateRelation(uri, requestEntity, resourceQueries);
+        if (found) {
+            return requestEntity;
+        }
+        return null;
     }
 
     @Override

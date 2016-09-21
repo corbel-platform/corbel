@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.management.relation.Relation;
 import javax.ws.rs.core.Response;
 
 import com.google.gson.JsonObject;
@@ -106,7 +107,18 @@ public class ResmiPutRem extends AbstractResmiRem {
                 return noContent();
             }
 
-            resmiService.createRelation(resourceUri, entity.orElse(null));
+            Optional<List<ResourceQuery>> conditions = Optional.ofNullable(parameters)
+                    .flatMap(RequestParameters::getOptionalApiParameters).map(RelationParameters::getConditions)
+                    .orElse(Optional.empty());
+            if (conditions.isPresent()) {
+                JsonObject result = resmiService.condicionalUpdateRelation(resourceUri, entity.get(), conditions.get());
+                if (result == null) {
+                    return ErrorResponseFactory.getInstance().preconditionFailed("Condition not satisfied.");
+                }
+            } else {
+                resmiService.upsertRelation(resourceUri, entity.orElse(null));
+            }
+
             return created();
         } catch (NotFoundException | UnsupportedEncodingException | IllegalArgumentException e) {
             return ErrorResponseFactory.getInstance()

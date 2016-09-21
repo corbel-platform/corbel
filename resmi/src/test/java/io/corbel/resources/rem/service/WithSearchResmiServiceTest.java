@@ -117,7 +117,7 @@ import com.google.gson.JsonObject;
         ResourceUri uri = new ResourceUri(DOMAIN, TYPE, ID, RELATION);
         when(searchableFieldRegistry.getFieldsFromResourceUri(eq(uri))).thenReturn(new HashSet(Arrays.asList("t1", "t2")));
         JsonObject relationData = new JsonObject();
-        defaultResmiService.createRelation(uri, relationData);
+        defaultResmiService.upsertRelation(uri, relationData);
 
         ArgumentCaptor<JsonObject> object = ArgumentCaptor.forClass(JsonObject.class);
         verify(resmiSearch).indexDocument(eq(uri), object.capture());
@@ -125,7 +125,7 @@ import com.google.gson.JsonObject;
         assertThat(object.getValue().has("_src_id")).isTrue();
         assertThat(object.getValue().get("_src_id").getAsString()).isEqualTo(ID);
 
-        verify(resmiDao).createRelation(uri, relationData);
+        verify(resmiDao).upsertRelation(uri, relationData);
     }
 
     @Test

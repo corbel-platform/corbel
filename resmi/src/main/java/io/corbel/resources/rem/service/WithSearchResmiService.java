@@ -235,12 +235,25 @@ public class WithSearchResmiService extends DefaultResmiService implements Searc
     }
 
     @Override
-    public JsonObject createRelation(ResourceUri uri, JsonObject requestEntity) throws NotFoundException, StartsWithUnderscoreException {
-        requestEntity = super.createRelation(uri, requestEntity);
+    public JsonObject upsertRelation(ResourceUri uri, JsonObject requestEntity) throws NotFoundException, StartsWithUnderscoreException {
+        requestEntity = super.upsertRelation(uri, requestEntity);
         requestEntity.addProperty(_SRC_ID, uri.getTypeId());
         indexInSearchService(uri, requestEntity);
         return requestEntity;
     }
+
+    @Override
+    public JsonObject condicionalUpdateRelation(ResourceUri uri, JsonObject requestEntity, List<ResourceQuery>
+            resourceQueries) throws StartsWithUnderscoreException {
+        requestEntity = super.condicionalUpdateRelation(uri, requestEntity, resourceQueries);
+        if (requestEntity != null) {
+            requestEntity.addProperty(_SRC_ID, uri.getTypeId());
+            indexInSearchService(uri, requestEntity);
+            return requestEntity;
+        }
+        return null;
+    }
+
 
     @Override
     public void deleteResource(ResourceUri uri) {

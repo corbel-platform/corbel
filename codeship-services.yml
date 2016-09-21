@@ -1,4 +1,0 @@
-maven:
-  add_docker: true
-  build:
-    dockerfile_path: Dockerfile

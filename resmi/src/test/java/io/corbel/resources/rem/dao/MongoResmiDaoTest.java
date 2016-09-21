@@ -177,7 +177,7 @@ import static org.mockito.Mockito.*;
                 answerWithId(jsonResult));
 
         ResourceUri resourceUri = new ResourceUri(DOMAIN, TEST_COLLECTION, TEST_ID, TEST_REL, TEST_ID_RELATION_OBJECT);
-        mongoResmiDao.createRelation(resourceUri, json);
+        mongoResmiDao.upsertRelation(resourceUri, json);
 
         verify(mongoOperations, times(1)).findAndModify(queryCaptor.capture(), updateCaptor.capture(), optionsCaptor.capture(),
                 eq(JsonObject.class), eq(RELATION_COLLECTION_NAME));

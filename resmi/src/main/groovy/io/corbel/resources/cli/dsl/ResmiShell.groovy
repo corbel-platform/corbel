@@ -56,7 +56,7 @@ class ResmiShell {
         assert collectionId: "collectionId is required"
         assert relation: "relation is required"
         assert relation: "relationId is required"
-        resmiService.createRelation(new ResourceUri(domain, collection, collectionId, relation, relationId), json)
+        resmiService.upsertRelation(new ResourceUri(domain, collection, collectionId, relation, relationId), json)
     }
 
 

@@ -32,6 +32,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.expression.spel.SpelParseException;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -258,7 +259,7 @@ public class MongoResmiDao implements ResmiDao {
     }
 
     @Override
-    public void createRelation(ResourceUri uri, JsonObject entity) throws NotFoundException {
+    public void upsertRelation(ResourceUri uri, JsonObject entity) throws NotFoundException {
         if (!existsResources(new ResourceUri(uri.getDomain(), uri.getType(), uri.getTypeId()))) {
             throw new NotFoundException("The resource does not exist");
         }
@@ -274,6 +275,12 @@ public class MongoResmiDao implements ResmiDao {
         }
     }
 
+    @Override
+    public boolean conditionalUpdateRelation(ResourceUri uri, JsonObject entity, List<ResourceQuery> resourceQueries) {
+        JsonObject saved = findModifyRelation(uri, entity, resourceQueries);
+        return saved != null;
+    }
+
     private JsonObject findModifyOrCreateRelation(ResourceUri uri, JsonObject entity) {
         if (uri.getRelationId() != null) {
             Criteria criteria = Criteria.where(JsonRelation._SRC_ID).is(uri.getTypeId()).and(JsonRelation._DST_ID).is(uri.getRelationId());
@@ -286,6 +293,18 @@ public class MongoResmiDao implements ResmiDao {
             mongoOperations.save(entity, getMongoCollectionName(uri));
             return entity;
         }
+    }
+    private JsonObject findModifyRelation(ResourceUri uri, JsonObject entity,  List<ResourceQuery>
+            resourceQueries) {
+        Query query = new MongoResmiQueryBuilder().query(resourceQueries).build();
+        Criteria criteria = Criteria.where(JsonRelation._SRC_ID).is(uri.getTypeId()).and(JsonRelation._DST_ID).is(uri.getRelationId());
+        query.addCriteria(criteria);
+        Update update = updateFromJsonObject(entity, Optional.<String>empty());
+        update.set(JsonRelation._SRC_ID, uri.getTypeId());
+        update.set(JsonRelation._DST_ID, uri.getRelationId());
+        return mongoOperations.findAndModify(query, update, FindAndModifyOptions.options().upsert(false).returnNew
+                        (true),
+                JsonObject.class, getMongoCollectionName(uri));
     }
 
     @Override
