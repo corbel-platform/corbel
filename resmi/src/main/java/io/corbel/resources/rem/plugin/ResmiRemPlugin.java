@@ -23,6 +23,7 @@ import com.codahale.metrics.health.HealthCheck;
 @Component public class ResmiRemPlugin extends RemPlugin {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResmiRemPlugin.class);
+    private static final String INDEX_MEDIA_TYPE = "application/index+json";
     private static final String ARTIFACT_ID = "resmi";
 
     @Autowired private ResmiShell shell;
@@ -49,7 +50,7 @@ import com.codahale.metrics.health.HealthCheck;
         registry.registerRem(context.getBean(ResmiRemNames.RESMI_POST, Rem.class), ".*", MediaType.APPLICATION_JSON, HttpMethod.POST);
         registry.registerRem(context.getBean(ResmiRemNames.RESMI_PUT, Rem.class), ".*", MediaType.APPLICATION_JSON, HttpMethod.PUT);
         registry.registerRem(context.getBean(ResmiRemNames.RESMI_DELETE, Rem.class), ".*", MediaType.APPLICATION_JSON, HttpMethod.DELETE);
-        registry.registerRem(context.getBean(ResmiRemNames.RESMI_INDEX, Rem.class), ".*/_index", MediaType.APPLICATION_JSON, HttpMethod.POST);
+        registry.registerRem(context.getBean(ResmiRemNames.RESMI_INDEX, Rem.class), ".*", MediaType.valueOf(INDEX_MEDIA_TYPE), HttpMethod.POST);
     }
 
     @Override
