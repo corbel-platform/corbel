@@ -147,19 +147,20 @@ public class MongoResmiDao implements ResmiDao {
 
     @Override
     public JsonArray findCollectionWithGroup(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> groups, boolean first) throws InvalidApiParamException {
-        Aggregation aggregation = buildGroupAggregation(uri, resourceQueries, textSearch, pagination, sort, groups, first);
+        Aggregation aggregation = buildGroupAggregation(uri, resourceQueries, textSearch, pagination, sort, groups, first, true);
         List<JsonObject> result = mongoOperations.aggregate(aggregation, getMongoCollectionName(uri), JsonObject.class).getMappedResults();
         return JsonUtils.convertToArray(first ? extractDocuments(result) : result);
     }
 
     @Override
     public JsonArray findRelationWithGroup(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> groups, boolean first) throws InvalidApiParamException {
-        Aggregation aggregation = buildGroupAggregation(uri, resourceQueries, textSearch, pagination, sort, groups, first);
+        Aggregation aggregation = buildGroupAggregation(uri, resourceQueries, textSearch, pagination, sort, groups, first, true);
         List<JsonObject> result = mongoOperations.aggregate(aggregation, getMongoCollectionName(uri), JsonObject.class).getMappedResults();
         return renameIds(JsonUtils.convertToArray(first ? extractDocuments(result) : result), uri.isTypeWildcard());
     }
 
-    private Aggregation buildGroupAggregation(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> fields, boolean first) throws InvalidApiParamException {
+
+    private Aggregation buildGroupAggregation(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> fields, boolean first, boolean allowDiskUse) throws InvalidApiParamException {
         MongoAggregationBuilder builder = new MongoAggregationBuilder();
         builder.match(uri, resourceQueries, textSearch);
         builder.group(fields, first);
@@ -172,7 +173,11 @@ public class MongoResmiDao implements ResmiDao {
             builder.pagination(pagination.get());
         }
 
-        return builder.build();
+        Aggregation aggregation = builder.build();
+        if(allowDiskUse){
+            aggregation.withOptions(new AggregationOptions.Builder().allowDiskUse(true).build());
+        }
+        return aggregation;
     }
 
     private List<JsonObject> extractDocuments(List<JsonObject> results) {
