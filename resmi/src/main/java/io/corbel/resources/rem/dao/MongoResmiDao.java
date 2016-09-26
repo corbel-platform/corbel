@@ -175,7 +175,7 @@ public class MongoResmiDao implements ResmiDao {
 
         Aggregation aggregation = builder.build();
         if(allowDiskUse){
-            aggregation.withOptions(new AggregationOptions.Builder().allowDiskUse(true).build());
+            aggregation = aggregation.withOptions(new AggregationOptions.Builder().allowDiskUse(true).build());
         }
         return aggregation;
     }
