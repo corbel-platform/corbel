@@ -71,14 +71,17 @@ public class MongoResmiDao implements ResmiDao {
     private final NamespaceNormalizer namespaceNormalizer;
     private final ResmiOrder resmiOrder;
     private final AggregationResultsFactory<JsonElement> aggregationResultsFactory;
+    private final boolean allowDiskUse;
 
     public MongoResmiDao(MongoOperations mongoOperations, JsonObjectMongoWriteConverter jsonObjectMongoWriteConverter,
-                         NamespaceNormalizer namespaceNormalizer, ResmiOrder resmiOrder, AggregationResultsFactory<JsonElement> aggregationResultsFactory) {
+                         NamespaceNormalizer namespaceNormalizer, ResmiOrder resmiOrder, AggregationResultsFactory<JsonElement> aggregationResultsFactory,
+                         boolean allowDiskUse) {
         this.mongoOperations = mongoOperations;
         this.jsonObjectMongoWriteConverter = jsonObjectMongoWriteConverter;
         this.namespaceNormalizer = namespaceNormalizer;
         this.resmiOrder = resmiOrder;
         this.aggregationResultsFactory = aggregationResultsFactory;
+        this.allowDiskUse = allowDiskUse;
     }
 
     @Override
@@ -147,20 +150,20 @@ public class MongoResmiDao implements ResmiDao {
 
     @Override
     public JsonArray findCollectionWithGroup(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> groups, boolean first) throws InvalidApiParamException {
-        Aggregation aggregation = buildGroupAggregation(uri, resourceQueries, textSearch, pagination, sort, groups, first, true);
+        Aggregation aggregation = buildGroupAggregation(uri, resourceQueries, textSearch, pagination, sort, groups, first);
         List<JsonObject> result = mongoOperations.aggregate(aggregation, getMongoCollectionName(uri), JsonObject.class).getMappedResults();
         return JsonUtils.convertToArray(first ? extractDocuments(result) : result);
     }
 
     @Override
     public JsonArray findRelationWithGroup(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> groups, boolean first) throws InvalidApiParamException {
-        Aggregation aggregation = buildGroupAggregation(uri, resourceQueries, textSearch, pagination, sort, groups, first, true);
+        Aggregation aggregation = buildGroupAggregation(uri, resourceQueries, textSearch, pagination, sort, groups, first);
         List<JsonObject> result = mongoOperations.aggregate(aggregation, getMongoCollectionName(uri), JsonObject.class).getMappedResults();
         return renameIds(JsonUtils.convertToArray(first ? extractDocuments(result) : result), uri.isTypeWildcard());
     }
 
 
-    private Aggregation buildGroupAggregation(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> fields, boolean first, boolean allowDiskUse) throws InvalidApiParamException {
+    private Aggregation buildGroupAggregation(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> fields, boolean first) throws InvalidApiParamException {
         MongoAggregationBuilder builder = new MongoAggregationBuilder();
         builder.match(uri, resourceQueries, textSearch);
         builder.group(fields, first);
@@ -173,11 +176,14 @@ public class MongoResmiDao implements ResmiDao {
             builder.pagination(pagination.get());
         }
 
-        Aggregation aggregation = builder.build();
-        if(allowDiskUse){
-            aggregation = aggregation.withOptions(new AggregationOptions.Builder().allowDiskUse(true).build());
+        if(allowDiskUse) {
+            return withAllowDiskUseOption(builder.build());
         }
-        return aggregation;
+        return builder.build();
+    }
+
+    private Aggregation withAllowDiskUseOption(Aggregation aggregation) {
+        return aggregation.withOptions(new AggregationOptions.Builder().allowDiskUse(true).build());
     }
 
     private List<JsonObject> extractDocuments(List<JsonObject> results) {
@@ -474,6 +480,9 @@ public class MongoResmiDao implements ResmiDao {
         }
 
         Aggregation aggregation = builder.build();
+        if(allowDiskUse){
+            aggregation = withAllowDiskUseOption(aggregation);
+        }
 
         List<JsonObject> results;
         try {
