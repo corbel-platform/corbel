@@ -66,9 +66,10 @@ public class ResmiIoc extends DefaultMongoConfiguration {
     }
 
     @Bean
-    public ResmiDao mongoResmiDao(AggregationResultsFactory<JsonElement> aggregationResultsFactory) throws Exception {
+    public ResmiDao mongoResmiDao(AggregationResultsFactory<JsonElement> aggregationResultsFactory,
+                                  @Value("${resmi.mongodb.aggregations.allowDiskUse}") boolean allowDiskUse) throws Exception {
         return new MongoResmiDao(mongoTemplate(), getJsonObjectMongoWriteConverter(), getNamespaceNormilizer(), getMongoResmiOrder(),
-                aggregationResultsFactory);
+                aggregationResultsFactory, allowDiskUse);
     }
 
     @Bean
