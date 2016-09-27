@@ -79,7 +79,7 @@ import static org.mockito.Mockito.*;
     public void setup() {
         when(defaultNameNormalizer.normalize(anyString())).then(returnsFirstArg());
         mongoResmiDao = Mockito.spy(new MongoResmiDao(mongoOperations, jsonObjectMongoWriteConverter, defaultNameNormalizer, resmiOrderMock,
-                new JsonAggregationResultsFactory(new Gson())));
+                new JsonAggregationResultsFactory(new Gson()), false));
     }
 
     @Test
