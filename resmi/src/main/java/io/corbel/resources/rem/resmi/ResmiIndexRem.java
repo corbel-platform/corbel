@@ -56,6 +56,9 @@ public class ResmiIndexRem extends BaseRem<JsonObject> {
                 if (object.has("unique") && object.get("unique").getAsBoolean()) {
                     mongoIndex.unique();
                 }
+                if (object.has("sparse") && object.get("sparse").getAsBoolean()) {
+                    mongoIndex.sparse();
+                }
                 indexDefinition = mongoIndex.getIndexDefinition();
             }
             resmiService.ensureIndex(resourceUri, indexDefinition);
