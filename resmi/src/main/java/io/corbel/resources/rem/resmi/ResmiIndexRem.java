@@ -49,10 +49,22 @@ public class ResmiIndexRem extends BaseRem<JsonObject> {
             if (object.has("type") && TEXT_SEARCH_INDEX.equals(object.get("type").getAsString())) {
                 MongoTextSearchIndex mongoTextSearchIndex = new MongoTextSearchIndex();
                 fields.forEach(field -> mongoTextSearchIndex.on(field.getAsString()));
+                if (object.has("name")) {
+                    String name = object.get("name").getAsString();
+                    if(!name.isEmpty()) {
+                        mongoTextSearchIndex.named(name);
+                    }
+                }
                 indexDefinition = mongoTextSearchIndex.getIndexDefinition();
             } else {
                 MongoIndex mongoIndex = new MongoIndex();
                 fields.forEach(field -> mongoIndex.on(field.getAsString()));
+                if (object.has("name")) {
+                    String name = object.get("name").getAsString();
+                    if(!name.isEmpty()) {
+                        mongoIndex.named(name);
+                    }
+                }
                 if (object.has("unique") && object.get("unique").getAsBoolean()) {
                     mongoIndex.unique();
                 }
