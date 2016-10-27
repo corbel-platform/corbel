@@ -1,5 +1,6 @@
 package io.corbel.resources.rem.plugin;
 
+import io.corbel.resources.rem.service.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -29,6 +30,8 @@ public abstract class RemPlugin implements InitializingBean {
     @Autowired protected Mode mode;
 
     @Autowired protected RemService remService;
+
+    @Autowired protected ServiceLocator serviceLocator;
 
     @Autowired protected RemRegistry registry;
 

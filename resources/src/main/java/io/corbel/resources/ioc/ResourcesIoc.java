@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.container.ContainerRequestFilter;
 
+import io.corbel.resources.rem.service.DefaultServiceLocator;
+import io.corbel.resources.rem.service.ServiceLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -108,6 +110,11 @@ import com.google.common.cache.CacheBuilder;
     @Bean
     public RemService getRemService(RemRegistry remRegistry) {
         return new DefaultRemService(remRegistry);
+    }
+
+    @Bean
+    public ServiceLocator serviceLocator() {
+        return new DefaultServiceLocator();
     }
 
     @Bean
