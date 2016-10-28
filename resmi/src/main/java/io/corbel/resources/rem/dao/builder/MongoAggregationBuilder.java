@@ -95,9 +95,14 @@ public class MongoAggregationBuilder {
         return this;
     }
 
-    public Aggregation build() throws InvalidApiParamException {
+    public MongoAggregationBuilder withOperation(AggregationOperation operation) {
+        operations.add(operation);
+        return this;
+    }
+
+    public Aggregation build() {
         if (operations.isEmpty()) {
-            throw new InvalidApiParamException("Cannot build aggregation without operations");
+            throw new IllegalStateException("Cannot build aggregation without operations");
         }
         return Aggregation.newAggregation(operations.toArray(new AggregationOperation[operations.size()]));
     }

@@ -66,11 +66,5 @@ public interface ResmiDao {
 
     void moveRelation(ResourceUri uri, RelationMoveOperation relationMoveOperation);
 
-    <T> List<T> findAll(ResourceUri uri, Class<T> entityClass);
-
     boolean conditionalUpdateRelation(ResourceUri uri, JsonObject entity, List<ResourceQuery> resourceQueries);
-
-    void ensureExpireIndex(ResourceUri uri);
-
-    void ensureIndex(ResourceUri uri, IndexDefinition indexDefinition);
 }

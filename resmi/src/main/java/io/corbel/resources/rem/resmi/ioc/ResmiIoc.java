@@ -8,11 +8,7 @@ import io.corbel.lib.mongo.config.DefaultMongoConfiguration;
 import io.corbel.lib.queries.request.AggregationResultsFactory;
 import io.corbel.lib.queries.request.JsonAggregationResultsFactory;
 import io.corbel.resources.rem.Rem;
-import io.corbel.resources.rem.dao.DefaultResmiOrder;
-import io.corbel.resources.rem.dao.MongoResmiDao;
-import io.corbel.resources.rem.dao.NamespaceNormalizer;
-import io.corbel.resources.rem.dao.ResmiDao;
-import io.corbel.resources.rem.dao.ResmiOrder;
+import io.corbel.resources.rem.dao.*;
 import io.corbel.resources.rem.health.ElasticSearchHealthCheck;
 import io.corbel.resources.rem.resmi.*;
 import io.corbel.resources.rem.search.DefaultElasticSearchService;
@@ -66,9 +62,9 @@ public class ResmiIoc extends DefaultMongoConfiguration {
     }
 
     @Bean
-    public ResmiDao mongoResmiDao(AggregationResultsFactory<JsonElement> aggregationResultsFactory,
-                                  @Value("${resmi.mongodb.aggregations.allowDiskUse}") boolean allowDiskUse) throws Exception {
-        return new MongoResmiDao(mongoTemplate(), getJsonObjectMongoWriteConverter(), getNamespaceNormilizer(), getMongoResmiOrder(),
+    public MongoResmiDao mongoResmiDao(AggregationResultsFactory<JsonElement> aggregationResultsFactory,
+                                       @Value("${resmi.mongodb.aggregations.allowDiskUse}") boolean allowDiskUse) throws Exception {
+        return new DefaultMongoResmiDao(mongoTemplate(), getJsonObjectMongoWriteConverter(), getNamespaceNormilizer(), getMongoResmiOrder(),
                 aggregationResultsFactory, allowDiskUse);
     }
 
@@ -128,7 +124,7 @@ public class ResmiIoc extends DefaultMongoConfiguration {
     }
 
     @Bean
-    public ResmiService resmiService(AggregationResultsFactory<JsonElement> aggregationResultsFactory, ResmiDao resmiDao) throws Exception {
+    public ResmiService resmiService(AggregationResultsFactory<JsonElement> aggregationResultsFactory, MongoResmiDao resmiDao) throws Exception {
         if (elasticSearchEnabled || textSearchMode.equalsIgnoreCase("elasticsearch")) {
             return new WithSearchResmiService(resmiDao, resmiSearch(aggregationResultsFactory), getSearchableFieldsRegistry(), getGson(), getClock());
         } else if (textSearchMode.equalsIgnoreCase("mongo")) {

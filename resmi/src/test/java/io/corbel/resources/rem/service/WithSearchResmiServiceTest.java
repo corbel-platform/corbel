@@ -11,8 +11,8 @@ import io.corbel.lib.queries.request.Pagination;
 import io.corbel.lib.queries.request.ResourceQuery;
 import io.corbel.lib.queries.request.Search;
 import io.corbel.lib.queries.request.Sort;
+import io.corbel.resources.rem.dao.MongoResmiDao;
 import io.corbel.resources.rem.dao.NotFoundException;
-import io.corbel.resources.rem.dao.ResmiDao;
 import io.corbel.resources.rem.model.ResourceUri;
 import io.corbel.resources.rem.request.CollectionParameters;
 import io.corbel.resources.rem.request.RelationParameters;
@@ -52,7 +52,8 @@ import com.google.gson.JsonObject;
 
     Gson gson = new Gson();
 
-    @Mock ResmiDao resmiDao;
+    @Mock
+    MongoResmiDao resmiDao;
     @Mock ResmiSearch resmiSearch;
     @Mock SearchableFieldsRegistry searchableFieldRegistry;
     CollectionParameters collectionParametersMock;

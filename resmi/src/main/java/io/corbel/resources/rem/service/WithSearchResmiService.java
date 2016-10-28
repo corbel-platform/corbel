@@ -9,8 +9,8 @@ import io.corbel.lib.queries.request.QueryNode;
 import io.corbel.lib.queries.request.QueryOperator;
 import io.corbel.lib.queries.request.ResourceQuery;
 import io.corbel.lib.queries.request.Search;
+import io.corbel.resources.rem.dao.MongoResmiDao;
 import io.corbel.resources.rem.dao.NotFoundException;
-import io.corbel.resources.rem.dao.ResmiDao;
 import io.corbel.resources.rem.model.GenericDocument;
 import io.corbel.resources.rem.model.ResourceUri;
 import io.corbel.resources.rem.model.SearchResource;
@@ -45,8 +45,8 @@ public class WithSearchResmiService extends DefaultResmiService implements Searc
     private final SearchableFieldsRegistry searchableFieldsRegistry;
     private final Gson gson;
 
-    public WithSearchResmiService(ResmiDao resmiDao, ResmiSearch search, SearchableFieldsRegistry searchableFieldsRegistry, Gson gson,
-            Clock clock) {
+    public WithSearchResmiService(MongoResmiDao resmiDao, ResmiSearch search, SearchableFieldsRegistry searchableFieldsRegistry, Gson gson,
+                                  Clock clock) {
         super(resmiDao, clock);
         this.search = search;
         this.searchableFieldsRegistry = searchableFieldsRegistry;

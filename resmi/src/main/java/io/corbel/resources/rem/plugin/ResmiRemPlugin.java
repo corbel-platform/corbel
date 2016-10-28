@@ -4,6 +4,7 @@ import io.corbel.lib.config.ConfigurationHelper;
 import io.corbel.resources.cli.dsl.ResmiShell;
 import io.corbel.resources.rem.Rem;
 import io.corbel.resources.rem.RemRegistry;
+import io.corbel.resources.rem.dao.MongoResmiDao;
 import io.corbel.resources.rem.dao.ResmiDao;
 import io.corbel.resources.rem.resmi.ioc.ResmiIoc;
 import io.corbel.resources.rem.resmi.ioc.ResmiRemNames;
@@ -38,6 +39,7 @@ import com.codahale.metrics.health.HealthCheck;
 
         //publish services
         serviceLocator.publish(ResmiDao.class, context.getBean(ResmiDao.class));
+        serviceLocator.publish(MongoResmiDao.class, context.getBean(MongoResmiDao.class));
     }
 
     @Override

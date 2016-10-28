@@ -3,7 +3,7 @@ package io.corbel.resources.rem.service;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import io.corbel.lib.queries.request.Search;
-import io.corbel.resources.rem.dao.ResmiDao;
+import io.corbel.resources.rem.dao.MongoResmiDao;
 import io.corbel.resources.rem.model.ResourceUri;
 import io.corbel.resources.rem.request.CollectionParameters;
 import io.corbel.resources.rem.request.RelationParameters;
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class TextSearchResmiService extends DefaultResmiService {
 
-    public TextSearchResmiService(ResmiDao resmiDao, Clock clock) {
+    public TextSearchResmiService(MongoResmiDao resmiDao, Clock clock) {
         super(resmiDao, clock);
     }
 
