@@ -72,14 +72,16 @@ import static org.mockito.Mockito.*;
 
     @Mock ResmiOrder resmiOrderMock;
 
-    private MongoResmiDao mongoResmiDao;
+    private DefaultMongoResmiDao mongoResmiDao;
+    private DefaultMongoResmiDao mongoResmiDaoNoSpy;
 
 
     @Before
     public void setup() {
         when(defaultNameNormalizer.normalize(anyString())).then(returnsFirstArg());
-        mongoResmiDao = Mockito.spy(new MongoResmiDao(mongoOperations, jsonObjectMongoWriteConverter, defaultNameNormalizer, resmiOrderMock,
-                new JsonAggregationResultsFactory(new Gson()), false));
+        mongoResmiDaoNoSpy = new DefaultMongoResmiDao(mongoOperations, jsonObjectMongoWriteConverter, defaultNameNormalizer, resmiOrderMock,
+                new JsonAggregationResultsFactory(new Gson()), false);
+        mongoResmiDao = Mockito.spy(mongoResmiDaoNoSpy);
     }
 
     @Test
@@ -89,7 +91,7 @@ import static org.mockito.Mockito.*;
         json.add("a", new JsonPrimitive("1"));
         when(mongoOperations.findById(TEST_ID, JsonObject.class, TEST_COLLECTION_NAME_IN_DB)).thenReturn(json);
 
-        JsonObject object = mongoResmiDao.findResource(resourceUri);
+        JsonObject object = mongoResmiDao.findResource(resourceUri, JsonObject.class);
         assertThat(object).isEqualTo(json);
     }
 
@@ -110,7 +112,7 @@ import static org.mockito.Mockito.*;
                 jsonObjectList);
 
         ResourceUri resourceUri = new ResourceUri(DOMAIN, TEST_COLLECTION, TEST_ID, TEST_REL);
-        JsonElement result = mongoResmiDao.findRelation(resourceUri, Optional.empty(), Optional.empty(), Optional.of(pagination), Optional.empty());
+        JsonElement result = mongoResmiDaoNoSpy.findRelation(resourceUri, Optional.empty(), Optional.empty(), Optional.of(pagination), Optional.empty());
 
         assertThat(result.isJsonArray()).isTrue();
         assertThat(result.getAsJsonArray().size()).isSameAs(jsonObjectList.size());
@@ -138,7 +140,7 @@ import static org.mockito.Mockito.*;
                 jsonObjectList);
 
         ResourceUri resourceUri = new ResourceUri(DOMAIN, TEST_COLLECTION, "_", TEST_REL);
-        JsonElement result = mongoResmiDao.findRelation(resourceUri, Optional.empty(), Optional.empty(), Optional.of(pagination), Optional.empty());
+        JsonElement result = mongoResmiDaoNoSpy.findRelation(resourceUri, Optional.empty(), Optional.empty(), Optional.of(pagination), Optional.empty());
 
         assertThat(result.isJsonArray()).isTrue();
         assertThat(result.getAsJsonArray().size()).isSameAs(jsonObjectList.size());
@@ -177,7 +179,7 @@ import static org.mockito.Mockito.*;
                 answerWithId(jsonResult));
 
         ResourceUri resourceUri = new ResourceUri(DOMAIN, TEST_COLLECTION, TEST_ID, TEST_REL, TEST_ID_RELATION_OBJECT);
-        mongoResmiDao.upsertRelation(resourceUri, json);
+        mongoResmiDaoNoSpy.upsertRelation(resourceUri, json);
 
         verify(mongoOperations, times(1)).findAndModify(queryCaptor.capture(), updateCaptor.capture(), optionsCaptor.capture(),
                 eq(JsonObject.class), eq(RELATION_COLLECTION_NAME));

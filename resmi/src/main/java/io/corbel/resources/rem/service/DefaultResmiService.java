@@ -6,9 +6,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.corbel.lib.queries.request.*;
+import io.corbel.resources.rem.dao.MongoResmiDao;
 import io.corbel.resources.rem.dao.NotFoundException;
 import io.corbel.resources.rem.dao.RelationMoveOperation;
-import io.corbel.resources.rem.dao.ResmiDao;
 import io.corbel.resources.rem.model.ResourceUri;
 import io.corbel.resources.rem.request.CollectionParameters;
 import io.corbel.resources.rem.request.RelationParameters;
@@ -34,10 +34,10 @@ public class DefaultResmiService implements ResmiService {
     protected final static Set<String> ATTRIBUTE_NAMES_RESERVED = Sets.newHashSet(_ID, _EXPIRE_AT, _ORDER, _SRC_ID, _DST_ID, _CREATED_AT,
             _UPDATED_AT, _ACL);
 
-    protected final ResmiDao resmiDao;
+    protected final MongoResmiDao resmiDao;
     protected final Clock clock;
 
-    public DefaultResmiService(ResmiDao resmiDao, Clock clock) {
+    public DefaultResmiService(MongoResmiDao resmiDao, Clock clock) {
         this.resmiDao = resmiDao;
         this.clock = clock;
     }

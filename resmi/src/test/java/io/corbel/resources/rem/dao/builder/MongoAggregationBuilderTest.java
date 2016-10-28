@@ -140,8 +140,8 @@ public class MongoAggregationBuilderTest {
                 agg.toString());
     }
 
-    @Test(expected = InvalidApiParamException.class)
-    public void testNoOperations() throws InvalidApiParamException {
+    @Test(expected = IllegalStateException.class)
+    public void testNoOperations() {
         builder.build();
     }
 

@@ -6,7 +6,7 @@ import io.corbel.lib.queries.request.Pagination;
 import io.corbel.lib.queries.request.ResourceQuery;
 import io.corbel.lib.queries.request.Search;
 import io.corbel.lib.queries.request.Sort;
-import io.corbel.resources.rem.dao.ResmiDao;
+import io.corbel.resources.rem.dao.MongoResmiDao;
 import io.corbel.resources.rem.model.ResourceUri;
 import io.corbel.resources.rem.request.CollectionParameters;
 import io.corbel.resources.rem.request.RelationParameters;
@@ -34,7 +34,8 @@ import static org.mockito.Mockito.when;
     String ID = "test";
     String TEXT_SEARCH = "textSearchQuery";
 
-    @Mock ResmiDao resmiDao;
+    @Mock
+    MongoResmiDao resmiDao;
     CollectionParameters collectionParametersMock;
     @Mock ResourceQuery resourceQueryMock;
     @Mock List<ResourceQuery> resourceQueriesMock;
