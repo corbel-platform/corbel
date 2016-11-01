@@ -5,6 +5,7 @@ import io.corbel.iam.repository.UserRepository;
 import io.corbel.lib.queries.request.Pagination;
 import io.corbel.lib.queries.request.ResourceQuery;
 import io.corbel.lib.queries.request.Sort;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -153,4 +154,43 @@ public class UserRepositoryDecorator implements UserRepository {
         decoratedUserRepository.deleteByDomain(domainId);
     }
 
+    @Override
+    public <S extends User> List<S> findAll(Example<S> example) {
+        return decoratedUserRepository.findAll(example);
+    }
+
+    @Override
+    public <S extends User> S insert(S s) {
+        return decoratedUserRepository.insert(s);
+    }
+
+    @Override
+    public <S extends User> List<S> insert(Iterable<S> iterable) {
+        return decoratedUserRepository.insert(iterable);
+    }
+
+    @Override
+    public <S extends User> List<S> findAll(Example<S> example, org.springframework.data.domain.Sort sort) {
+        return decoratedUserRepository.findAll(example, sort);
+    }
+
+    @Override
+    public <S extends User> S findOne(Example<S> example) {
+        return decoratedUserRepository.findOne(example);
+    }
+
+    @Override
+    public <S extends User> Page<S> findAll(Example<S> example, Pageable pageable) {
+        return decoratedUserRepository.findAll(example, pageable);
+    }
+
+    @Override
+    public <S extends User> long count(Example<S> example) {
+        return decoratedUserRepository.count(example);
+    }
+
+    @Override
+    public <S extends User> boolean exists(Example<S> example) {
+        return decoratedUserRepository.exists(example);
+    }
 }

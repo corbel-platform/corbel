@@ -13,5 +13,4 @@ public interface GroupRepositoryCustom {
 
     void deleteScopes(String... scopesId);
 
-    void insert(Group group);
 }

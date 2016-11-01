@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.index.IndexDefinition;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Alexander De Leon (alex.deleon@devialab.com)
@@ -67,7 +68,11 @@ public interface MongoResmiDao extends ResmiDao {
 
     <T> List<T> findCollection(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass) throws InvalidApiParamException;
 
-    <T> List<T> findRelation(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass)throws InvalidApiParamException;
+    <T> List<T> findRelation(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass) throws InvalidApiParamException;
+
+    <T> Stream<T> findCollectionAsStream(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass) throws InvalidApiParamException;
+
+    <T> Stream<T> findRelationAsStream(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass) throws InvalidApiParamException;
 
     <T> List<T> aggregate(ResourceUri resourceUri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass, AggregationOperation... operations) throws InvalidApiParamException;
 

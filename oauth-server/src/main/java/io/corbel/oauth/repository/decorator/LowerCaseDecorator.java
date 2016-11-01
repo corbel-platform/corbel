@@ -4,6 +4,10 @@ import java.util.List;
 
 import io.corbel.oauth.model.User;
 import io.corbel.oauth.repository.UserRepository;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 /**
  * @author Francisco Sanchez
@@ -93,6 +97,7 @@ public class LowerCaseDecorator extends UserRepositoryDecorator {
     public boolean upsert(String id, User data) {
         return super.upsert(id, userToLowerCase(data));
     }
+
 
     private User userToLowerCase(User data) {
         if (data.getUsername() != null) {

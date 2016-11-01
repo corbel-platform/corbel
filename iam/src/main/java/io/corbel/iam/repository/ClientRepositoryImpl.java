@@ -41,11 +41,6 @@ public class ClientRepositoryImpl extends HasScopesRepositoryBase<Client, String
     }
 
     @Override
-    public void insert(Client client) {
-        mongo.insert(client);
-    }
-
-    @Override
     public void deleteByDomain(String domain) {
         mongo.remove(query(where(FIELD_DOMAIN).is(domain)), Client.class);
     }
