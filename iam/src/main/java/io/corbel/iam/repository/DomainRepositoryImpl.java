@@ -69,9 +69,5 @@ import com.mongodb.BasicDBObject;
         mongo.updateFirst(query, update, Domain.class);
     }
 
-    @Override
-    public void insert(Domain domain) {
-        mongo.insert(domain);
-    }
 
 }

@@ -2,6 +2,7 @@ package io.corbel.oauth.repository.decorator;
 
 import java.util.List;
 
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -130,4 +131,43 @@ public abstract class UserRepositoryDecorator implements UserRepository {
         return decoratedUserRepository.findAll(sort);
     }
 
+    @Override
+    public <S extends User> List<S> findAll(Example<S> example) {
+        return decoratedUserRepository.findAll(example);
+    }
+
+    @Override
+    public <S extends User> S insert(S s) {
+        return decoratedUserRepository.insert(s);
+    }
+
+    @Override
+    public <S extends User> List<S> insert(Iterable<S> iterable) {
+        return decoratedUserRepository.insert(iterable);
+    }
+
+    @Override
+    public <S extends User> List<S> findAll(Example<S> example, Sort sort) {
+        return decoratedUserRepository.findAll(example, sort);
+    }
+
+    @Override
+    public <S extends User> S findOne(Example<S> example) {
+        return decoratedUserRepository.findOne(example);
+    }
+
+    @Override
+    public <S extends User> Page<S> findAll(Example<S> example, Pageable pageable) {
+        return decoratedUserRepository.findAll(example, pageable);
+    }
+
+    @Override
+    public <S extends User> long count(Example<S> example) {
+        return decoratedUserRepository.count(example);
+    }
+
+    @Override
+    public <S extends User> boolean exists(Example<S> example) {
+        return decoratedUserRepository.exists(example);
+    }
 }

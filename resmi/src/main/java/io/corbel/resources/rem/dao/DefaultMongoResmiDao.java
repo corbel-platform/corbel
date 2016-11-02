@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import io.corbel.lib.mongo.JsonObjectMongoWriteConverter;
 import io.corbel.lib.mongo.utils.GsonUtil;
@@ -25,16 +27,22 @@ import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.QueryMapper;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.IndexDefinition;
+import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.util.CloseableIterator;
+import org.springframework.data.util.StreamUtils;
 import org.springframework.expression.spel.SpelParseException;
 
 import java.util.*;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -95,7 +103,20 @@ public class DefaultMongoResmiDao implements MongoResmiDao {
 
     @Override
     public <T> List<T> findCollection(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass) throws InvalidApiParamException {
-        final MongoResmiQueryBuilder mongoResmiQueryBuilder = new MongoResmiQueryBuilder();
+        Query query = getCollectionQuery(resourceQueries, textSearch, pagination, sort);
+        LOG.debug("findCollection Query executed : " + query.getQueryObject().toString());
+        return mongoOperations.find(query, entityClass, getMongoCollectionName(uri));
+    }
+
+    @Override
+    public <T> List<T> findRelation(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass) throws InvalidApiParamException {
+        Query query = getRelationQuery(uri, resourceQueries, textSearch, pagination, sort);
+        LOG.debug("findRelation Query executed : " + query.getQueryObject().toString());
+        return mongoOperations.find(query, entityClass, getMongoCollectionName(uri));
+    }
+
+    private Query getCollectionQuery(Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort) throws InvalidApiParamException {
+        MongoResmiQueryBuilder mongoResmiQueryBuilder = new MongoResmiQueryBuilder();
         try {
             mongoResmiQueryBuilder.query(resourceQueries.orElse(null)).pagination(pagination.orElse(null)).sort(sort.orElse(null));
         } catch (PatternSyntaxException pse) {
@@ -105,14 +126,11 @@ public class DefaultMongoResmiDao implements MongoResmiDao {
         {
             mongoResmiQueryBuilder.textSearch(textSearch.get());
         }
-        final Query query = mongoResmiQueryBuilder.build();
-        LOG.debug("findCollection Query executed : " + query.getQueryObject().toString());
-        return mongoOperations.find(query, entityClass, getMongoCollectionName(uri));
+        return mongoResmiQueryBuilder.build();
     }
 
-    @Override
-    public <T> List<T> findRelation(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass) throws InvalidApiParamException {
-        final MongoResmiQueryBuilder mongoResmiQueryBuilder = new MongoResmiQueryBuilder();
+    private Query getRelationQuery(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort) throws InvalidApiParamException {
+        MongoResmiQueryBuilder mongoResmiQueryBuilder = new MongoResmiQueryBuilder();
 
         if (uri.getRelationId() != null) {
             mongoResmiQueryBuilder.relationDestinationId(uri.getRelationId());
@@ -130,13 +148,24 @@ public class DefaultMongoResmiDao implements MongoResmiDao {
             mongoResmiQueryBuilder.textSearch(textSearch.get());
         }
 
-        final Query query = mongoResmiQueryBuilder.build();
+        Query query = mongoResmiQueryBuilder.build();
         query.fields().exclude(_ID);
-
-        LOG.debug("findRelation Query executed : " + query.getQueryObject().toString());
-        return mongoOperations.find(query, entityClass, getMongoCollectionName(uri));
+        return query;
     }
 
+    @Override
+    public <T> Stream<T> findCollectionAsStream(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass) throws InvalidApiParamException {
+        Query query = getCollectionQuery(resourceQueries, textSearch, pagination, sort);
+        CloseableIterator<T> iterator = mongoOperations.stream(query, entityClass, getMongoCollectionName(uri));
+        return StreamUtils.createStreamFromIterator(iterator);
+    }
+
+    @Override
+    public <T> Stream<T> findRelationAsStream(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass) throws InvalidApiParamException {
+        Query query = getRelationQuery(uri, resourceQueries, textSearch, pagination, sort);
+        CloseableIterator<T> iterator = mongoOperations.stream(query, entityClass, getMongoCollectionName(uri));
+        return StreamUtils.createStreamFromIterator(iterator);
+    }
 
     @Override
     public <T> List<T> aggregate(ResourceUri resourceUri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, Class<T> entityClass, AggregationOperation... operations) {

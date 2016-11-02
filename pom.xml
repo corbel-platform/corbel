@@ -58,21 +58,26 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>repository.spring.milestone</id>
+            <name>Spring Milestone Repository</name>
+            <url>http://repo.spring.io/milestone</url>
+        </repository>
     </repositories>
 
     <properties>
         <appassembler.plugin.version>1.10</appassembler.plugin.version>
         <maven-surefire.plugin.version>2.17</maven-surefire.plugin.version>
         <buildmetadata-maven-plugin.version>1.5.2</buildmetadata-maven-plugin.version>
-        <lib-config.version>0.3.0</lib-config.version>
-        <lib-cli.version>0.4.0</lib-cli.version>
-        <lib-mongodb.version>1.0.0</lib-mongodb.version>
+        <lib-config.version>0.4.0-SNAPSHOT</lib-config.version>
+        <lib-cli.version>0.5.0-SNAPSHOT</lib-cli.version>
+        <lib-mongodb.version>1.1.0-SNAPSHOT</lib-mongodb.version>
         <lib-token.version>0.9.0</lib-token.version>
-        <lib-queries.version>0.14.0</lib-queries.version>
+        <lib-queries.version>0.16.0-SNAPSHOT</lib-queries.version>
         <lib-ws.version>0.21.0-SNAPSHOT</lib-ws.version>
         <lib-rabbitmq.version>0.9.0</lib-rabbitmq.version>
-        <events.version>1.27.0</events.version>
-        <spring.version>4.1.7.RELEASE</spring.version>
+        <events.version>1.32.0-SNAPSHOT</events.version>
+        <spring.version>4.3.3.RELEASE</spring.version>
         <dropwizard.version>0.8.1</dropwizard.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <docker.files>${project.basedir}/../src/docker/service</docker.files>
@@ -206,7 +211,7 @@
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-mongodb</artifactId>
-                <version>1.6.1.RELEASE</version>
+                <version>1.10.0.M1</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>spring-beans</artifactId>
