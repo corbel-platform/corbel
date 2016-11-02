@@ -11,12 +11,16 @@ import io.corbel.resources.rem.dao.builder.MongoAggregationBuilder;
 import io.corbel.resources.rem.model.ResourceUri;
 import io.corbel.resources.rem.resmi.exception.InvalidApiParamException;
 import io.corbel.resources.rem.utils.JsonUtils;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.index.IndexDefinition;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static io.corbel.resources.rem.dao.builder.MongoAggregationBuilder.REFERENCE;
 
 /**
  * @author Alexander De Leon (alex.deleon@devialab.com)
@@ -48,18 +52,32 @@ public interface MongoResmiDao extends ResmiDao {
 
     default JsonArray findCollectionWithGroup(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> groups, boolean first) throws InvalidApiParamException {
         if (sort.isPresent() && first) {
-            sort = Optional.of(new Sort(sort.get().getDirection().name(), "first."+sort.get().getField()));
+            sort = getSortWithFirst(sort);
         }
-        List<JsonObject> result = aggregate(uri, resourceQueries, textSearch, pagination, sort, JsonObject.class);
+        GroupOperation group = getGroupOperationWithFirst(groups, first);
+        List<JsonObject> result = aggregate(uri, resourceQueries, textSearch, pagination, sort, JsonObject.class, group);
         return JsonUtils.convertToArray(first ? extractDocuments(result) : result);
     }
 
     default JsonArray findRelationWithGroup(ResourceUri uri, Optional<List<ResourceQuery>> resourceQueries, Optional<String> textSearch, Optional<Pagination> pagination, Optional<Sort> sort, List<String> groups, boolean first) throws InvalidApiParamException {
         if (sort.isPresent() && first) {
-            sort = Optional.of(new Sort(sort.get().getDirection().name(), "first."+sort.get().getField()));
+            sort = getSortWithFirst(sort);
         }
-        List<JsonObject> result = aggregate(uri, resourceQueries, textSearch, pagination, sort, JsonObject.class);
+        GroupOperation group = getGroupOperationWithFirst(groups, first);
+        List<JsonObject> result = aggregate(uri, resourceQueries, textSearch, pagination, sort, JsonObject.class, group);
         return ResmiDaoHelper.renameIds(JsonUtils.convertToArray(first ? extractDocuments(result) : result), uri.isTypeWildcard());
+    }
+
+    default GroupOperation getGroupOperationWithFirst(List<String> groups, boolean first) {
+        GroupOperation group = Aggregation.group(groups.toArray(new String[groups.size()]));
+        if (first) {
+            group = group.first(Aggregation.ROOT).as(REFERENCE);
+        }
+        return group;
+    }
+
+    default Optional<Sort> getSortWithFirst(Optional<Sort> sort) {
+        return Optional.of(new Sort(sort.get().getDirection().name(), "first."+sort.get().getField()));
     }
 
 
@@ -78,6 +96,6 @@ public interface MongoResmiDao extends ResmiDao {
     void ensureIndex(ResourceUri uri, IndexDefinition indexDefinition);
 
     static List<JsonObject> extractDocuments(List<JsonObject> results) {
-        return results.stream().map(result -> result.get(MongoAggregationBuilder.REFERENCE).getAsJsonObject()).collect(Collectors.toList());
+        return results.stream().map(result -> result.get(REFERENCE).getAsJsonObject()).collect(Collectors.toList());
     }
 }
