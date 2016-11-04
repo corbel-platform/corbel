@@ -16,10 +16,11 @@ import io.corbel.iam.repository.DomainRepository;
 import io.corbel.iam.repository.UserRepository;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.joda.time.Instant;
 
 /**
  * @author Alexander De Leon
- * 
+ *
  */
 public class JsonTokenAuthorizationRequestContext implements AuthorizationRequestContext {
 
@@ -127,6 +128,11 @@ public class JsonTokenAuthorizationRequestContext implements AuthorizationReques
             hasPrincipal = payload.has(PRINCIPAL) && payload.get(PRINCIPAL).isJsonPrimitive();
         }
         return hasPrincipal;
+    }
+
+    @Override
+    public void setAuthorizationExpiration(long millis) {
+        jsonToken.setExpiration(new Instant(millis));
     }
 
     @Override

@@ -37,6 +37,8 @@ public interface AuthorizationRequestContext {
 
     boolean hasPrincipal();
 
+    void setAuthorizationExpiration(long millis);
+
     Long getAuthorizationExpiration();
 
     boolean isOAuth();

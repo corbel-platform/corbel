@@ -22,9 +22,14 @@ public class MaxExpireAuthorizationRule implements AuthorizationRule {
     @Override
     public void process(AuthorizationRequestContext context) throws UnauthorizedException {
         long currentTime = System.currentTimeMillis();
-        if (context.getAuthorizationExpiration() > currentTime + maxExpirationInMillis) {
-            throw new UnauthorizedTimeException("Authorization request exceds maximum expiration. Maximum is " + maxExpirationInMillis
-                    + " milliseconds since its issued time");
+        long maxExpirationTokenInMillis = currentTime + maxExpirationInMillis;
+        if (context.getAuthorizationExpiration() > maxExpirationTokenInMillis) {
+            if(context.getRequestedDomain().getCapabilities().getOrDefault("allowTokensWithInvalidExpirationTimes", true)) {
+                context.setAuthorizationExpiration(maxExpirationTokenInMillis);
+            } else {
+                throw new UnauthorizedTimeException("Authorization request exceds maximum expiration. " +
+                        "Maximum is " + maxExpirationInMillis + " milliseconds since its issued time");
+            }
         }
     }
 }
