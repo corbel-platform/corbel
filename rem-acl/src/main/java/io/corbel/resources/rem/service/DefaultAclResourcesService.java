@@ -195,6 +195,9 @@ public class DefaultAclResourcesService implements AclResourcesService {
 
     @Override
     public boolean isManagedBy(String requestedDomain, TokenInfo tokenInfo, String collection) {
+        if(tokenInfo == null){
+            return false;
+        }
         return isManagedBy(requestedDomain, Optional.ofNullable(tokenInfo.getUserId()), tokenInfo.getGroups(), collection);
     }
 
