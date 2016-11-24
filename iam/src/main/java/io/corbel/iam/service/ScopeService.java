@@ -27,7 +27,7 @@ public interface ScopeService {
 
     void addAuthorizationRules(String token, Set<Scope> filledScopes);
 
-    void addAuthorizationRulesForPublicAccess(String token, Set<Scope> filledScopes);
+    void addAuthorizationRulesForPublicAccess(String token, Set<Scope> publicScopes);
 
     Set<Scope> expandScopes(Collection<String> scopes);
 

@@ -105,7 +105,7 @@ public class DefaultScopeService implements ScopeService {
         Scope resultScope = new Scope(scope.getId(), scope.getType(), scope.getAudience(), scope.getScopes(), scope.getRules(),
                 new JsonParser().parse(scope.getParameters().toString()).getAsJsonObject());
         Map<String, String> parameters = createParametersMap(scopeIdAndParams);
-        resultScope.getParameters().entrySet().stream().forEach(entry -> {
+        resultScope.getParameters().entrySet().forEach(entry -> {
             if (parameters.containsKey(entry.getKey())) {
                 String value = parameters.get(entry.getKey());
                 if (Pattern.matches(entry.getValue().getAsString(), value)) {
@@ -174,8 +174,13 @@ public class DefaultScopeService implements ScopeService {
     }
 
     @Override
-    public void addAuthorizationRulesForPublicAccess(String token, Set<Scope> filledScopes) {
-        addAuthorizationRules(token, filledScopes, true);
+    public void addAuthorizationRulesForPublicAccess(String token, Set<Scope> publicScopes) {
+        publicScopes.stream().filter(scope -> scope.getParameters() != null).forEach(scope -> {
+            Map<String, String> parameters = new HashMap<>();
+            scope.getParameters().entrySet().forEach(entry -> parameters.put(entry.getKey(), entry.getValue().getAsString()));
+            fillStrategy.fillScope(scope, parameters);
+        });
+        addAuthorizationRules(token, publicScopes, true);
     }
 
     private void addAuthorizationRules(String token, Set<Scope> filledScopes, boolean publicToken) {
