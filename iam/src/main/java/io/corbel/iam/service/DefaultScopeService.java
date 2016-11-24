@@ -175,12 +175,15 @@ public class DefaultScopeService implements ScopeService {
 
     @Override
     public void addAuthorizationRulesForPublicAccess(String token, Set<Scope> publicScopes) {
-        publicScopes.stream().filter(scope -> scope.getParameters() != null).forEach(scope -> {
-            Map<String, String> parameters = new HashMap<>();
-            scope.getParameters().entrySet().forEach(entry -> parameters.put(entry.getKey(), entry.getValue().getAsString()));
-            fillStrategy.fillScope(scope, parameters);
-        });
-        addAuthorizationRules(token, publicScopes, true);
+        Set<Scope> filledScopes = publicScopes.stream().map(scope -> {
+            if(scope.getParameters() != null) {
+                Map<String, String> parameters = new HashMap<>();
+                scope.getParameters().entrySet().forEach(entry -> parameters.put(entry.getKey(), entry.getValue().getAsString()));
+                return fillStrategy.fillScope(scope, parameters);
+            }
+            return scope;
+        }).collect(Collectors.toSet());
+        addAuthorizationRules(token, filledScopes, true);
     }
 
     private void addAuthorizationRules(String token, Set<Scope> filledScopes, boolean publicToken) {
