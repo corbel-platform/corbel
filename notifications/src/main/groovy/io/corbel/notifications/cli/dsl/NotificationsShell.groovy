@@ -37,6 +37,7 @@ class NotificationsShell {
         notification.type = notificationFields.type
         notification.text = notificationFields.text
         notification.title = notificationFields.title
+        notification.replyTo = notificationFields.replyTo
         notificationRepository.save(notification)
     }
 
