@@ -33,6 +33,11 @@ public class EmailNotificationsService implements NotificationsService {
 
     @Override
     public void send(Domain domain, NotificationTemplate notificationTemplate, String... recipients) {
+        send(domain, notificationTemplate, null, recipients);
+    }
+
+    @Override
+    public void send(Domain domain, NotificationTemplate notificationTemplate, String replyTo, String... recipients) {
         try {
             LOG.info("Sending email to: {}" + Arrays.toString(recipients));
             Properties props = new Properties();
@@ -58,6 +63,11 @@ public class EmailNotificationsService implements NotificationsService {
                     .collect(Collectors.toList())){
                 message.addRecipient(Message.RecipientType.BCC,recipient);
             }
+            if(replyTo != null) {
+                InternetAddress[] replyToAddresses = InternetAddress.parse(replyTo);
+                message.setReplyTo(replyToAddresses);
+            }
+
 
             message.setSubject(notificationTemplate.getTitle(), Charsets.UTF_8.toString());
             message.setContent(notificationTemplate.getText(), "text/html; charset=utf-8");

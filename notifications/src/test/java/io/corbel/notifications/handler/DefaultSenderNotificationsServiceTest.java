@@ -67,7 +67,7 @@ public class DefaultSenderNotificationsServiceTest {
 				notificationEvent.getProperties(), notificationEvent.getRecipient());
 
 		verify(notificationFiller, times(1)).fill(notificationTemplate, properties);
-		verify(notificationsDispatcher, times(1)).send(domain, notificationTemplate, "recipient");
+		verify(notificationsDispatcher, times(1)).send(domain, notificationTemplate, null, "recipient");
 	}
 
 }

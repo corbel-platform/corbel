@@ -30,4 +30,9 @@ public class AndroidPushNotificationsService implements NotificationsService {
             LOG.error("Sending android push notification error: {}", e.getMessage(), e);
         }
     }
+
+    @Override
+    public void send(Domain domain, NotificationTemplate notificationTemplate, String replyTo, String... recipient) {
+        send(domain, notificationTemplate, recipient);
+    }
 }

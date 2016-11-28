@@ -9,4 +9,6 @@ import io.corbel.notifications.model.NotificationTemplate;
 public interface NotificationsService {
 
     void send(Domain domain, NotificationTemplate notificationTemplate, String ... recipient);
+
+    void send(Domain domain, NotificationTemplate notificationTemplate, String replyTo, String ... recipient);
 }

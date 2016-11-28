@@ -18,6 +18,8 @@ public class NotificationTemplate {
 
     private String sender;
 
+    private String replyTo;
+
     @Template
     private String text;
 
@@ -91,6 +93,14 @@ public class NotificationTemplate {
         this.title = title;
     }
 
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
+    }
+
     public void updateTemplate(NotificationTemplate updateNotificationTemplate) {
         if (updateNotificationTemplate.getSender() != null) {
             setSender(updateNotificationTemplate.getSender());
@@ -110,6 +120,9 @@ public class NotificationTemplate {
         if (updateNotificationTemplate.getType() != null) {
             setType(updateNotificationTemplate.getType());
         }
+        if(updateNotificationTemplate.getReplyTo() != null) {
+            setReplyTo(updateNotificationTemplate.getReplyTo());
+        }
     }
 
     @Override
@@ -125,6 +138,7 @@ public class NotificationTemplate {
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (sender != null ? !sender.equals(that.sender) : that.sender != null) return false;
         if (text != null ? !text.equals(that.text) : that.text != null) return false;
+        if (replyTo != null ? !replyTo.equals(that.replyTo) : that.replyTo != null) return false;
         return !(title != null ? !title.equals(that.title) : that.title != null);
 
     }
@@ -138,6 +152,7 @@ public class NotificationTemplate {
         result = 31 * result + (sender != null ? sender.hashCode() : 0);
         result = 31 * result + (text != null ? text.hashCode() : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (replyTo != null ? replyTo.hashCode() : 0);
         return result;
     }
 }
