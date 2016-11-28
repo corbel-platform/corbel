@@ -14,10 +14,13 @@ public class NotificationTemplateApi {
     @NotEmpty
     private String sender;
 
+    private String replyTo;
+
     @NotEmpty
     private String text;
 
     private String title;
+
 
     public NotificationTemplateApi() {
     }
@@ -28,6 +31,7 @@ public class NotificationTemplateApi {
         this.sender = notificationTemplate.getSender();
         this.text = notificationTemplate.getText();
         this.title = notificationTemplate.getTitle();
+        this.replyTo = notificationTemplate.getReplyTo();
     }
 
     public String getId() {
@@ -70,6 +74,14 @@ public class NotificationTemplateApi {
         this.title = title;
     }
 
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -81,6 +93,7 @@ public class NotificationTemplateApi {
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (sender != null ? !sender.equals(that.sender) : that.sender != null) return false;
         if (text != null ? !text.equals(that.text) : that.text != null) return false;
+        if (replyTo != null ? !replyTo.equals(that.replyTo) : that.replyTo != null) return false;
         return !(title != null ? !title.equals(that.title) : that.title != null);
 
     }
@@ -92,6 +105,7 @@ public class NotificationTemplateApi {
         result = 31 * result + (sender != null ? sender.hashCode() : 0);
         result = 31 * result + (text != null ? text.hashCode() : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (replyTo != null ? replyTo.hashCode() : 0);
         return result;
     }
 }

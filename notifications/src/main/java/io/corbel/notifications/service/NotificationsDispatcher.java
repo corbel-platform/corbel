@@ -14,9 +14,10 @@ public class NotificationsDispatcher {
         this.notificationsServiceFactory = notificationsServiceFactory;
     }
 
-    public void send(Domain domain, NotificationTemplate notificationTemplate, String ... recipients) {
+
+    public void send(Domain domain, NotificationTemplate notificationTemplate, String replyTo, String ... recipients) {
         NotificationsService notificationsService =
                 notificationsServiceFactory.getNotificationService(notificationTemplate.getType());
-        notificationsService.send(domain, notificationTemplate, recipients);
+        notificationsService.send(domain, notificationTemplate, replyTo, recipients);
     }
 }

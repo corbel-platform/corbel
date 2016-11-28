@@ -36,6 +36,11 @@ public class IosPushNotificationsService implements NotificationsService {
         }
     }
 
+    @Override
+    public void send(Domain domain, NotificationTemplate notificationTemplate, String replyTo, String... recipient) {
+        send(domain, notificationTemplate, recipient);
+    }
+
     private void createApnsService(Domain domain) {
         byte[] certificate = domain.getIosNotificationsCertificate().getBytes(StandardCharsets.UTF_8);
         ApnsServiceBuilder apnsServiceBuilder = APNS.newService()

@@ -13,20 +13,20 @@ public class InternetAddressParsingTest {
 
     @Test
     public void testParse() throws AddressException {
-        InternetAddress[] addresses = InternetAddress.parse("MAPFRE Welcome Pack Digital <noreply@jvsp.co>");
+        InternetAddress[] addresses = InternetAddress.parse("Test User <test@example.org>");
         Assert.assertEquals(1, addresses.length);
         InternetAddress address = addresses[0];
-        Assert.assertEquals("MAPFRE Welcome Pack Digital", address.getPersonal());
-        Assert.assertEquals("noreply@jvsp.co", address.getAddress());
+        Assert.assertEquals("Test User", address.getPersonal());
+        Assert.assertEquals("test@example.org", address.getAddress());
     }
 
     @Test
     public void testParseAddressOnly() throws AddressException {
-        InternetAddress[] addresses = InternetAddress.parse("noreply@jvsp.co");
+        InternetAddress[] addresses = InternetAddress.parse("test@example.org");
         Assert.assertEquals(1, addresses.length);
         InternetAddress address = addresses[0];
         Assert.assertNull(address.getPersonal());
-        Assert.assertEquals("noreply@jvsp.co", address.getAddress());
+        Assert.assertEquals("test@example.org", address.getAddress());
 
     }
 

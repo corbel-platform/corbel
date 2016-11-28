@@ -51,7 +51,7 @@ public class DefaultSenderNotificationsService implements SenderNotificationsSer
         NotificationTemplate notificationTemplate = notificationRepository.findOne(notificationTemplateId);
         if (notificationTemplate != null) {
             NotificationTemplate notificationTemplateFilled = notificationFiller.fill(notificationTemplate, properties);
-            notificationsDispatcher.send(domain, notificationTemplateFilled, recipients);
+            notificationsDispatcher.send(domain, notificationTemplateFilled, notificationTemplate.getReplyTo(), recipients);
         }
     }
 
