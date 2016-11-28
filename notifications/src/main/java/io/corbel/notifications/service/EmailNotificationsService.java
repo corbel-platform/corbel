@@ -10,10 +10,12 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Created by Alberto J. Rubio
@@ -37,10 +39,26 @@ public class EmailNotificationsService implements NotificationsService {
             props.setProperty("mail.smtp.host", host);
             props.setProperty("mail.smtp.port", port);
             MimeMessage message = new MimeMessage(Session.getDefaultInstance(props, null));
-            message.setFrom(new InternetAddress(notificationTemplate.getSender()));
-            for (String recipient : recipients) {
-                message.addRecipient(Message.RecipientType.BCC, new InternetAddress(recipient));
+            InternetAddress[] from = InternetAddress.parse(notificationTemplate.getSender());
+            if(from.length != 1){
+                throw new IllegalStateException("Only one FROM address is accepted. Got: "+notificationTemplate.getSender());
             }
+            message.setFrom(from[0]);
+            for(InternetAddress recipient : Arrays.asList(recipients).stream()
+                    .map(str -> {
+                        try {
+                            return InternetAddress.parse(str)[0];
+                        }
+                        catch (AddressException e) {
+                            LOG.warn("Invalid recipient address: "+str);
+                            return null;
+                        }
+                    })
+                    .filter(r -> r != null)
+                    .collect(Collectors.toList())){
+                message.addRecipient(Message.RecipientType.BCC,recipient);
+            }
+
             message.setSubject(notificationTemplate.getTitle(), Charsets.UTF_8.toString());
             message.setContent(notificationTemplate.getText(), "text/html; charset=utf-8");
             Transport.send(message);
