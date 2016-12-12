@@ -98,6 +98,11 @@ public class ResmiIoc extends DefaultMongoConfiguration {
         return new ResmiIndexRem(resmiService);
     }
 
+    @Bean(name = ResmiRemNames.RESMI_DROP_INDEX)
+    public Rem getResmiDropIndex(ResmiService resmiService) throws Exception {
+        return new ResmiDropIndexRem(resmiService);
+    }
+
     @Bean
     public IdInjectorMongoEventListener getIdInjectorMongoEventListener() {
         return new IdInjectorMongoEventListener();

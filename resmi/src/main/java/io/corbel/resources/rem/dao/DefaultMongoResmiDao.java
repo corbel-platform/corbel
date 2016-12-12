@@ -336,6 +336,11 @@ public class DefaultMongoResmiDao implements MongoResmiDao {
         mongoOperations.indexOps(getMongoCollectionName(uri)).ensureIndex(indexDefinition);
     }
 
+    @Override
+    public void dropIndex(ResourceUri uri, String indexId) {
+        mongoOperations.indexOps(getMongoCollectionName(uri)).dropIndex(indexId);
+    }
+
 
     @Override
     public JsonObject deleteResource(ResourceUri uri) {

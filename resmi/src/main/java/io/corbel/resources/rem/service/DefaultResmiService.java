@@ -193,6 +193,11 @@ public class DefaultResmiService implements ResmiService {
     }
 
     @Override
+    public void dropIndex(ResourceUri uri, String indexId) {
+        resmiDao.dropIndex(uri, indexId);
+    }
+
+    @Override
     public void removeObjectId(JsonObject object) {
         if (object.has(ResmiService.ID)) {
             object.remove(ResmiService.ID);

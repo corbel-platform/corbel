@@ -57,6 +57,7 @@ import com.codahale.metrics.health.HealthCheck;
         registry.registerRem(context.getBean(ResmiRemNames.RESMI_PUT, Rem.class), ".*", MediaType.APPLICATION_JSON, HttpMethod.PUT);
         registry.registerRem(context.getBean(ResmiRemNames.RESMI_DELETE, Rem.class), ".*", MediaType.APPLICATION_JSON, HttpMethod.DELETE);
         registry.registerRem(context.getBean(ResmiRemNames.RESMI_INDEX, Rem.class), ".*", MediaType.valueOf(INDEX_MEDIA_TYPE), HttpMethod.POST);
+        registry.registerRem(context.getBean(ResmiRemNames.RESMI_DROP_INDEX, Rem.class), ".*", MediaType.valueOf(INDEX_MEDIA_TYPE), HttpMethod.DELETE);
     }
 
     @Override
