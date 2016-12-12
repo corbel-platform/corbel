@@ -26,7 +26,7 @@ public class AutoOrient implements ImageOperation {
 
             active = Boolean.parseBoolean(values.get(0));
         } catch (Exception e) {
-            throw new ImageOperationsException("Bad parameter parameter in autoOrient: " + parameter, e);
+            throw new ImageOperationsException("Bad parameter in autoOrient: " + parameter, e);
         }
 
         if (active) {
