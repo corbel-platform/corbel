@@ -39,6 +39,11 @@ import io.corbel.resources.rem.service.ImageOperationsService;
     }
 
     @Bean
+    public AutoOrient getAutoOrientOperation() {
+        return new AutoOrient();
+    }
+
+    @Bean
     public Crop getCropOperation() {
         return new Crop();
     }
