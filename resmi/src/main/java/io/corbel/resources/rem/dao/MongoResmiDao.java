@@ -100,7 +100,10 @@ public interface MongoResmiDao extends ResmiDao {
 
     void ensureIndex(ResourceUri uri, IndexDefinition indexDefinition);
 
+    void dropIndex(ResourceUri uri, String indexId);
+
     static List<JsonObject> extractDocuments(List<JsonObject> results) {
         return results.stream().map(result -> result.get(REFERENCE).getAsJsonObject()).collect(Collectors.toList());
     }
+
 }

@@ -65,6 +65,8 @@ public interface ResmiService {
 
     void ensureIndex(ResourceUri uri, IndexDefinition indexDefinition);
 
+    void dropIndex(ResourceUri uri, String indexId);
+
     void removeObjectId(JsonObject object);
 
 }
