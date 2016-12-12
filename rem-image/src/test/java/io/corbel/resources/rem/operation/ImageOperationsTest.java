@@ -12,6 +12,22 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class ImageOperationsTest {
 
     @Test
+    public void autoOrientTest() throws ImageOperationsException {
+        List<String> inputParameters = Collections.singletonList("true");
+        List<String> expectedOutputs = Collections.singletonList("[-auto-orient]");
+
+        operationTest(inputParameters, expectedOutputs, new AutoOrient());
+    }
+
+    @Test
+    public void autoOrientFalseTest() throws ImageOperationsException {
+        List<String> inputParameters = Collections.singletonList("false");
+        List<String> expectedOutputs = Collections.singletonList("[]");
+
+        operationTest(inputParameters, expectedOutputs, new AutoOrient());
+    }
+
+    @Test
     public void cropTest() throws ImageOperationsException {
         List<String> inputParameters = Collections.singletonList("(10, 20, 30, 40)");
         List<String> expectedOutputs = Collections.singletonList("[-crop, 20x20+10+20]");

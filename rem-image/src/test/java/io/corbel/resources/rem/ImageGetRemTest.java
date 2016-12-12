@@ -166,14 +166,16 @@ public class ImageGetRemTest {
 
     @Test
     public void getParametersTest() throws ImageOperationsException {
-        List<String> parametersStrings = Arrays.asList("resize=(12, 23);crop=(10, 10, 20, 20)", "  cropFromCenter  =  (10, 10)  ",
-                ";crop=(10, 10, 20, 20);", "     ;resize=(      200     , 3  )   ");
+        List<String> parametersStrings = Arrays.asList( "resize=(12, 23);crop=(10, 10, 20, 20)", "  cropFromCenter  =  (10, 10)  ",
+                ";crop=(10, 10, 20, 20);", "     ;resize=(      200     , 3  )   ", ";autoOrient=true");
 
         List<List<ImageOperationDescription>> expectedParameterLists = Arrays.asList(Arrays.asList(new ImageOperationDescription("resize",
                 "(12, 23)"), new ImageOperationDescription("crop", "(10, 10, 20, 20)")), Collections
                 .singletonList(new ImageOperationDescription("cropFromCenter", "(10, 10)")), Collections
-                .singletonList(new ImageOperationDescription("crop", "(10, 10, 20, 20)")), Collections
-                .singletonList(new ImageOperationDescription("resize", "(      200     , 3  )")));
+                        .singletonList(new ImageOperationDescription("crop", "(10, 10, 20, 20)")), Collections
+                .singletonList(new ImageOperationDescription("resize", "(      200     , 3  )")),
+                Collections.singletonList(new ImageOperationDescription("autoOrient", "true")
+                ));
 
         assertThat(parametersStrings.size()).isEqualTo(expectedParameterLists.size());
 
