@@ -105,6 +105,8 @@ public class Scope extends Entity {
             return false;
         if (type != null ? !type.equals(scope.type) : scope.type != null)
             return false;
+        if (parameters != null ? !parameters.equals(scope.parameters) : scope.parameters != null)
+            return false;
 
         return true;
     }
@@ -116,6 +118,7 @@ public class Scope extends Entity {
         result = 31 * result + (audience != null ? audience.hashCode() : 0);
         result = 31 * result + (rules != null ? rules.hashCode() : 0);
         result = 31 * result + (scopes != null ? scopes.hashCode() : 0);
+        result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
         return result;
     }
 

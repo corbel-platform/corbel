@@ -53,7 +53,16 @@ public class ScopesAuthorizationRule implements AuthorizationRule {
     }
 
     private Set<Scope> getAllowedScopes(Set<String> domainScopes, Set<String> requestedScopes) {
-        return Sets.intersection(scopeService.expandScopes(requestedScopes), scopeService.expandScopes(domainScopes));
+
+
+        Set<Scope> expandedRequestedScopes = scopeService.expandScopes(requestedScopes);
+        Set<Scope> expandedDomainScopes = scopeService.expandScopes(domainScopes);
+
+        Set<String> intersectedIds = Sets.intersection(
+                expandedRequestedScopes.stream().map(Scope::getId).collect(Collectors.toSet()),
+                expandedDomainScopes.stream().map(Scope::getId).collect(Collectors.toSet()));
+
+        return expandedRequestedScopes.stream().filter(scope -> intersectedIds.contains(scope.getId())).collect(Collectors.toSet());
     }
 
     private void checkRequestedScopes(Set<Scope> requestedExpandScopes, Set<Scope> allowedScopes) throws UnauthorizedException {

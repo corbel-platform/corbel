@@ -216,13 +216,13 @@ public class DefaultScopeService implements ScopeService {
         Validate.notNull(scopes);
         Validate.noNullElements(scopes);
         Set<Scope> expandedScopes = new HashSet<>();
-        Set<String> processedCompositeScopes = new HashSet<>();
+        Set<Scope> processedCompositeScopes = new HashSet<>();
         List<Scope> scopesToProcess = new ArrayList<>(scopes.size());
         scopesToProcess.addAll(getScopes(scopes));
         while (!scopesToProcess.isEmpty()) {
             Scope scope = scopesToProcess.remove(0);
             if (scope.isComposed()) {
-                if (processedCompositeScopes.add(scope.getId())) {
+                if (processedCompositeScopes.add(scope)) {
                     scopesToProcess.addAll(getScopes(addParams(scope.getScopes(), Optional.ofNullable(scope.getParameters()))));
                 }
             } else {
