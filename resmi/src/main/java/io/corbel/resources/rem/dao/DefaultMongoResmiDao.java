@@ -399,7 +399,7 @@ public class DefaultMongoResmiDao implements MongoResmiDao {
     @Override
     public JsonElement average(ResourceUri resourceUri, List<ResourceQuery> resourceQueries, String field) {
         List<DBObject> results =  aggregate(resourceUri, Optional.ofNullable(resourceQueries), group().avg(field).as(AVERAGE).count().as(COUNT));
-        return fieldNotExists(resourceUri, field, results, AVERAGE) ? aggregationResultsFactory.averageResult(Optional.empty()) :
+        return results.isEmpty() || fieldNotExists(resourceUri, field, results, AVERAGE) ? aggregationResultsFactory.averageResult(Optional.empty()) :
                 aggregationResultsFactory.averageResult(getAggregationResultValue(AVERAGE, results, resourceUri, field));
     }
 
