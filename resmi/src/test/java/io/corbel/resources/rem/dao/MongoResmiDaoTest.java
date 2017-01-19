@@ -309,6 +309,27 @@ import static org.mockito.Mockito.*;
                         + "\"}} , { \"$group\" : { \"_id\" :  null  , \"average\" : { \"$avg\" : \"$" + testField + "\"} , \"count\" : { \"$sum\" : 1}}}]}");
     }
 
+
+    @Test
+    public void averageEmptyTest() {
+        ResourceQuery query = new ResourceQuery();
+        String field = "field";
+        String value = "value";
+        String testField = "test";
+
+        ResourceUri resourceUri = new ResourceUri(DOMAIN, TEST_COLLECTION);
+
+        ArgumentCaptor<Aggregation> argument = ArgumentCaptor.forClass(Aggregation.class);
+        query.addQueryNode(new QueryNodeImpl(QueryOperator.$EQ, field, new StringQueryLiteral(value)));
+
+        Mockito.when(mongoOperations.aggregate(argument.capture(), eq(TEST_COLLECTION_NAME_IN_DB), eq(DBObject.class))).thenReturn(
+                new AggregationResults<>(Collections.emptyList(), new BasicDBObject()));
+
+        JsonElement result = mongoResmiDao.average(resourceUri, Collections.singletonList(query), testField);
+
+        assertThat(result.getAsJsonObject().get("average")).isEqualTo(JsonNull.INSTANCE);
+    }
+
     @Test
     public void averageNotExistsFieldTest() {
         ResourceQuery query = new ResourceQuery();
