@@ -296,7 +296,7 @@ public class IamIoc {
     @Bean
     public IamShell getIamShell(GroupService groupService) {
         return new IamShell(clientRepository, scopeRepository, getUserRepository(), domainRepository, env.getProperty("iam.uri"),
-                identityRepository, groupRepository);
+                identityRepository, groupRepository, getClientIdGenerator(), getIdentityIdGenerator(), getGroupIdGenerator());
     }
 
     @Bean

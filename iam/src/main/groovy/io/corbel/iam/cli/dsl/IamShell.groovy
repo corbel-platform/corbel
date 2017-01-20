@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.corbel.lib.cli.console.Description
 import io.corbel.lib.cli.console.Shell
+import io.corbel.lib.mongo.IdGenerator
 import net.oauth.jsontoken.JsonToken
 import net.oauth.jsontoken.crypto.HmacSHA256Signer
 import org.bouncycastle.util.encoders.Base64
@@ -29,9 +30,14 @@ class IamShell {
     IdentityRepository identityRepository
     String iamUri
     GroupRepository groupRepository
+    IdGenerator<Client> clientIdGenerator
+    IdGenerator<Identity> identityIdGenerator
+    IdGenerator<Group> groupIdGenerator
+
 
     public IamShell(ClientRepository clientRepository, ScopeRepository scopeRepository, UserRepository userRepository,
-                    DomainRepository domainRepository, String iamUri, IdentityRepository identityRepository, GroupRepository groupRepository) {
+                    DomainRepository domainRepository, String iamUri, IdentityRepository identityRepository, GroupRepository groupRepository,
+                    IdGenerator<Client> clientIdGenerator, IdGenerator<Identity> identityIdGenerator, IdGenerator<Group> groupIdGenerator) {
         this.clientRepository = clientRepository
         this.scopeRepository = scopeRepository
         this.userRepository = userRepository
@@ -39,6 +45,9 @@ class IamShell {
         this.iamUri = iamUri
         this.identityRepository = identityRepository
         this.groupRepository = groupRepository
+        this.clientIdGenerator = clientIdGenerator
+        this.identityIdGenerator = identityIdGenerator
+        this.groupIdGenerator = groupIdGenerator
     }
 
     @Description("Creates a new domain on the DB. The input parameter is a map containing the domain data.")
@@ -74,6 +83,8 @@ class IamShell {
         client.version = clientFields.version
         client.clientSideAuthentication = clientFields.clientSideAuthentication
         client.resetNotificationId = clientFields.resetNotificationId
+
+        client.id = clientFields.id ? clientFields.id : clientIdGenerator.generateId(client)
 
         if (clientFields.resetUrl) {
             client.resetUrl = clientFields.resetUrl
@@ -244,6 +255,7 @@ class IamShell {
         identity.setUserId(identityFields.userId)
         identity.setOauthService(identityFields.oauthService)
         identity.setOauthId(identityFields.oauthId)
+        identity.id = identityFields.id? identityFields.id : identityIdGenerator.generateId(identity)
         identityRepository.save(identity)
     }
 
@@ -251,8 +263,9 @@ class IamShell {
     def createGroup(groupFields) {
         assert groupFields.name: 'name is required'
         assert groupFields.domain: 'domain is required'
-
-        groupRepository.save(new Group(null, groupFields.name, groupFields.domain, groupFields.scopes))
+        Group group = new Group(null, groupFields.name, groupFields.domain, groupFields.scopes)
+        group.id = groupFields.id? groupFields.id : groupIdGenerator.generateId(group)
+        groupRepository.save(group)
     }
 
     @Description('Remove a users group')

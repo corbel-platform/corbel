@@ -55,7 +55,7 @@ import io.corbel.notifications.template.NotificationFiller;
     @Bean
     public NotificationsShell getNotificationsShell(NotificationRepository notificationRepository,
                                                     DomainRepository domainRepository) {
-        return new NotificationsShell(notificationRepository, domainRepository);
+        return new NotificationsShell(notificationRepository, domainRepository, getNotificationTemplateIdGenerator());
     }
 
     @Bean

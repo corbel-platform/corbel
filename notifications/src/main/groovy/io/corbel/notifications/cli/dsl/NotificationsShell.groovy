@@ -2,7 +2,9 @@ package io.corbel.notifications.cli.dsl
 
 import io.corbel.lib.cli.console.Description
 import io.corbel.lib.cli.console.Shell
+import io.corbel.lib.mongo.IdGenerator
 import io.corbel.notifications.model.Domain
+import io.corbel.notifications.model.Notification
 import io.corbel.notifications.model.NotificationTemplate
 import io.corbel.notifications.repository.DomainRepository
 import io.corbel.notifications.repository.NotificationRepository
@@ -16,11 +18,14 @@ class NotificationsShell {
 
     NotificationRepository notificationRepository
     DomainRepository domainRepository
+    IdGenerator<NotificationTemplate> notificationIdGenerator
 
     public NotificationsShell(NotificationRepository notificationRepository,
-                              DomainRepository domainRepository) {
+                              DomainRepository domainRepository,
+                              IdGenerator<NotificationTemplate> notificationIdGenerator) {
         this.notificationRepository = notificationRepository
-        this.domainRepository = domainRepository;
+        this.domainRepository = domainRepository
+        this.notificationIdGenerator = notificationIdGenerator
     }
 
     @Description("Creates a new notification on the DB. The input parameter is a map containing the notification data.")
@@ -38,6 +43,7 @@ class NotificationsShell {
         notification.text = notificationFields.text
         notification.title = notificationFields.title
         notification.replyTo = notificationFields.replyTo
+        notification.id = notificationFields.id? notificationFields.id : notificationIdGenerator.generateId(notification)
         notificationRepository.save(notification)
     }
 
