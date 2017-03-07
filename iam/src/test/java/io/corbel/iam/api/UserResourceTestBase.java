@@ -25,6 +25,7 @@ public abstract class UserResourceTestBase {
     protected static final Domain TEST_DOMAIN = mock(Domain.class);
     protected static final String TEST_OTHER_DOMAIN = "other_domain";
     protected static final String TEST_USER_EMAIL = "some@email.com";
+    protected static final String TEST_STATE = "some@email.com";
     protected static final String TEST_USER_FIRST_NAME = "firstname";
     protected static final String TEST_USER_LAST_NAME = "lastname";
     protected static final String TEST_USER_PHONE = "phone";

@@ -214,19 +214,23 @@ public class IamIoc {
 
     @Bean
     public UserService getUserService(EventsService eventsService, RefreshTokenService refreshTokenService,
-                                      MailResetPasswordService mailResetPasswordService, Gson gson) {
+                                      MailService mailService, Gson gson) {
         return new DefaultUserService(getUserRepository(), eventsService, userTokenRepository, authorizationRulesRepository,
-                refreshTokenService, mailResetPasswordService, gson);
+                refreshTokenService, mailService, gson);
     }
 
     @Bean
-    public MailResetPasswordService getMailResetPasswordService(EventsService eventsService, ScopeService scopeService,
-                                                                TokenFactory tokenFactory, ClientRepository clientRepository) {
-        return new DefaultMailResetPasswordService(eventsService, scopeService, tokenFactory, clientRepository, env.getProperty(
-                "iam.token.resetPasswordTokenScope", String.class), Clock.systemUTC(), env.getProperty(
-                "iam.token.resetPasswordTokenDurationInSec", Long.class),
-                env.getProperty("email.resetPassword.notification", String.class), env.getProperty("email.resetPassword.clientUrl",
-                String.class));
+    public MailService getMailResetPasswordService(EventsService eventsService, ScopeService scopeService,
+                                                   TokenFactory tokenFactory, ClientRepository clientRepository) {
+        return new DefaultMailService(eventsService, scopeService, tokenFactory, clientRepository, Clock.systemUTC(),
+                env.getProperty("iam.token.resetPasswordTokenScope", String.class),
+                env.getProperty("iam.token.resetPasswordTokenDurationInSec", Long.class),
+                env.getProperty("email.resetPassword.notification", String.class),
+                env.getProperty("email.resetPassword.clientUrl", String.class),
+                env.getProperty("iam.token.emailValidationTokenScope", String.class),
+                env.getProperty("iam.token.emailValidationTokenDurationInSec", Long.class),
+                env.getProperty("email.emailValidation.notification", String.class),
+                env.getProperty("email.emailValidation.clientUrl", String.class));
     }
 
     @Bean

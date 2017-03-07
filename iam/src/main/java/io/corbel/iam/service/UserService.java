@@ -23,7 +23,7 @@ public interface UserService {
 
     User update(User user);
 
-    User create(User user) throws CreateUserException;
+    User create(String clientId, User user) throws CreateUserException;
 
     User findById(String id);
 
@@ -48,6 +48,10 @@ public interface UserService {
     User getUserProfile(User user, Set<String> userProfileFields) throws UserProfileConfigurationException;
 
     void sendMailResetPassword(String email, String clientId, String domain);
+
+    void sendValidationEmail(User user, String clientId);
+
+    void confirmEmail(String domain, String email);
 
     List<User> findUserProfilesByDomain(Domain domain, ResourceQuery resourceQuery, Pagination pagination, Sort sort)
             throws UserProfileConfigurationException;

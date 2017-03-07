@@ -36,19 +36,19 @@ public class DefaultUserService implements UserService {
     private final UserTokenRepository userTokenRepository;
     private final AuthorizationRulesRepository authorizationRulesRepository;
     private final RefreshTokenService refreshTokenService;
-    private final MailResetPasswordService mailResetPasswordService;
+    private final MailService mailService;
     private final Gson gson;
 
     public DefaultUserService(UserRepository userRepository, EventsService eventsService, UserTokenRepository userTokenRepository,
-            AuthorizationRulesRepository authorizationRulesRepository, RefreshTokenService refreshTokenService,
-            MailResetPasswordService mailResetPasswordService, Gson gson) {
+                              AuthorizationRulesRepository authorizationRulesRepository, RefreshTokenService refreshTokenService,
+                              MailService mailService, Gson gson) {
 
         this.userRepository = userRepository;
         this.eventsService = eventsService;
         this.userTokenRepository = userTokenRepository;
         this.authorizationRulesRepository = authorizationRulesRepository;
         this.refreshTokenService = refreshTokenService;
-        this.mailResetPasswordService = mailResetPasswordService;
+        this.mailService = mailService;
         this.gson = gson;
     }
 
@@ -79,9 +79,10 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public User create(User user) throws CreateUserException {
+    public User create(String clientId, User user) throws CreateUserException {
         try {
             User createdUser = userRepository.save(user);
+            mailService.sendMailValidation(clientId, user);
             eventsService.sendUserCreatedEvent(createdUser);
             return createdUser;
         } catch (DataIntegrityViolationException exception) {
@@ -129,7 +130,7 @@ public class DefaultUserService implements UserService {
     public void invalidateAllTokens(String userId) {
         List<UserToken> allUserTokens = userTokenRepository.findByUserId(userId);
         if (allUserTokens != null) {
-            allUserTokens.stream().forEach(token -> invalidateToken(token.getToken()));
+            allUserTokens.forEach(token -> invalidateToken(token.getToken()));
         }
     }
 
@@ -164,7 +165,21 @@ public class DefaultUserService implements UserService {
     @Override
     public void sendMailResetPassword(String email, String clientId, String domain) {
         Optional.ofNullable(userRepository.findByDomainAndEmail(domain, email)).ifPresent(
-                user -> mailResetPasswordService.sendMailResetPassword(clientId, user, email, domain));
+                user -> mailService.sendMailResetPassword(clientId, user));
+    }
+
+    @Override
+    public void sendValidationEmail(User user, String clientId) {
+        mailService.sendMailValidation(clientId, user);
+    }
+
+    @Override
+    public void confirmEmail(String domain, String email) {
+        User user = userRepository.findByDomainAndEmail(domain, email);
+        if (user != null) {
+            user.setEmailValidated(true);
+            userRepository.save(user);
+        }
     }
 
     @Override

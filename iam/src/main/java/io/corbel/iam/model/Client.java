@@ -23,6 +23,9 @@ public class Client extends TraceableEntity implements HasScopes {
     private Boolean clientSideAuthentication;
     private String resetUrl;
     private String resetNotificationId;
+    private Boolean emailValidationEnabled;
+    private String emailValidationUrl;
+    private String emailValidationNotificationId;
 
     public String getResetUrl() {
         return resetUrl;
@@ -108,6 +111,30 @@ public class Client extends TraceableEntity implements HasScopes {
         return scopes.remove(scope);
     }
 
+    public Boolean getEmailValidationEnabled() {
+        return emailValidationEnabled;
+    }
+
+    public void setEmailValidationEnabled(Boolean emailValidationEnabled) {
+        this.emailValidationEnabled = emailValidationEnabled;
+    }
+
+    public String getEmailValidationUrl() {
+        return emailValidationUrl;
+    }
+
+    public void setEmailValidationUrl(String emailValidationUrl) {
+        this.emailValidationUrl = emailValidationUrl;
+    }
+
+    public String getEmailValidationNotificationId() {
+        return emailValidationNotificationId;
+    }
+
+    public void setEmailValidationNotificationId(String emailValidationNotificationId) {
+        this.emailValidationNotificationId = emailValidationNotificationId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -156,4 +183,5 @@ public class Client extends TraceableEntity implements HasScopes {
         result = 31 * result + (resetNotificationId != null ? resetNotificationId.hashCode() : 0);
         return result;
     }
+
 }

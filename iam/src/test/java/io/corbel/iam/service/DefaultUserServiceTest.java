@@ -46,7 +46,6 @@ import com.google.gson.Gson;
     private static final String TEST_USER_LAST_NAME = "lastname";
     private static final String USER_ID = "userId";
     private static final String CLIENT_ID = "asnroejasdklf";
-    private static final String DOMAIN_ID = "domain_id";
     private static final String[] TEST_SCOPES = {"kasdjflksaj", "jsdkafj", "haweuriwu"};
 
     @Mock private DefaultUserService service;
@@ -56,14 +55,14 @@ import com.google.gson.Gson;
     @Mock private AuthorizationRulesRepository authorizationRulesRepositoryMock;
     @Mock private RefreshTokenService refreshTokenServiceMock;
 
-    @Mock private MailResetPasswordService mailResetPasswordServiceMock;
+    @Mock private MailService mailServiceMock;
 
     @Mock User user;
 
     @Before
     public void setup() {
         service = new DefaultUserService(userRepositoryMock, eventServiceMock, userTokenRepositoryMock, authorizationRulesRepositoryMock,
-                refreshTokenServiceMock, mailResetPasswordServiceMock, new Gson());
+                refreshTokenServiceMock, mailServiceMock, new Gson());
     }
 
     @Test
@@ -152,8 +151,8 @@ import com.google.gson.Gson;
 
         service.sendMailResetPassword(TEST_USER_EMAIL, CLIENT_ID, TEST_DOMAIN);
 
-        verify(mailResetPasswordServiceMock).sendMailResetPassword(CLIENT_ID, testUser, TEST_USER_EMAIL, TEST_DOMAIN);
-        verifyNoMoreInteractions(mailResetPasswordServiceMock);
+        verify(mailServiceMock).sendMailResetPassword(CLIENT_ID, testUser);
+        verifyNoMoreInteractions(mailServiceMock);
     }
 
     @Test
@@ -162,7 +161,7 @@ import com.google.gson.Gson;
 
         service.sendMailResetPassword(TEST_USER_EMAIL, CLIENT_ID, TEST_DOMAIN);
 
-        verify(mailResetPasswordServiceMock, never()).sendMailResetPassword(any(), any(), any(), eq(DOMAIN_ID));
+        verify(mailServiceMock, never()).sendMailResetPassword(any(), any());
     }
 
     @Test
@@ -202,7 +201,7 @@ import com.google.gson.Gson;
     @Test
     public void createUser() throws CreateUserException {
         when(userRepositoryMock.save(user)).thenReturn(user);
-        service.create(user);
+        service.create(CLIENT_ID, user);
         verify(userRepositoryMock).save(user);
         verify(eventServiceMock).sendUserCreatedEvent(user);
     }

@@ -1,6 +1,5 @@
 package io.corbel.iam.cli.dsl
 
-import com.google.common.collect.Sets
 import io.corbel.iam.model.*
 import io.corbel.iam.repository.*
 import com.google.gson.Gson
@@ -14,7 +13,6 @@ import org.bouncycastle.util.encoders.Base64
 import org.joda.time.Instant
 
 import java.util.regex.Pattern
-import java.util.stream.Collectors
 
 /**
  * @author Alexander De Leon
@@ -88,6 +86,13 @@ class IamShell {
 
         if (clientFields.resetUrl) {
             client.resetUrl = clientFields.resetUrl
+        }
+
+        client.emailValidationEnabled = clientFields.emailValidationEnabled
+        client.emailValidationNotificationId = clientFields.emailValidationNotificationId
+
+        if(clientFields.emailValidationUrl) {
+            client.emailValidationUrl = clientFields.emailValidationUrl
         }
 
         if (clientFields.scopes) {
