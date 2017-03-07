@@ -63,7 +63,7 @@ public class DefaultMailService implements MailService {
     @Override
     public void sendMailValidation(String clientId, User user) {
         Optional.ofNullable(clientRepository.findOne(clientId)).ifPresent(client -> {
-            if(client.getEmailValidationEnabled()) {
+            if(client.getEmailValidationEnabled() != null && client.getEmailValidationEnabled()) {
                 String notificationId = Optional.ofNullable(client.getEmailValidationNotificationId()).orElse(defaultEmailValidationNotificationId);
                 String mailValidationUrl = Optional.ofNullable(client.getEmailValidationUrl()).orElse(defaultEmailValidationUrl);
                 sendMailValidationMail(notificationId, clientId, mailValidationUrl, user, emailValidationTokenScope, emailValidationTokenDurationInSeconds);
