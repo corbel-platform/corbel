@@ -26,6 +26,7 @@ import io.corbel.lib.queries.request.Pagination;
 import io.corbel.lib.queries.request.ResourceQuery;
 import io.corbel.lib.queries.request.Sort;
 import io.corbel.lib.ws.annotation.Rest;
+import io.corbel.lib.ws.api.error.ErrorResponseFactory;
 import io.corbel.lib.ws.auth.AuthorizationInfo;
 import io.corbel.lib.ws.model.Error;
 import io.dropwizard.auth.Auth;
@@ -113,13 +114,15 @@ import com.google.gson.JsonElement;
             @Auth AuthorizationInfo authorizationInfo) {
 
         return domainService.getDomain(domainId).map(domain -> {
+            user.setEmailValidated(false);
             user.setDomain(domain.getId());
             user.setScopes(domain.getDefaultScopes());
             setTracebleEntity(user, authorizationInfo);
+            String clientId = authorizationInfo.getClientId();
             User createdUser;
             // The new user can only be on the domainId of the client making the request
                 try {
-                    createdUser = userService.create(ensureNoId(user));
+                    createdUser = userService.create(clientId, ensureNoId(user));
                 } catch (CreateUserException duplicatedUser) {
                     return IamErrorResponseFactory.getInstance().entityExists(Message.USER_EXISTS, duplicatedUser.getMessage());
                 }
@@ -151,6 +154,8 @@ import com.google.gson.JsonElement;
 
             User user = getUserResolvingMeAndUserDomainVerifying(userId, authorizationInfo.getUserId(), domainId);
 
+            boolean changeEmail = userData.getEmail() != null && !Objects.equals(user.getEmail(), userData.getEmail());
+
             user.updateUser(userData);
 
             Optional<Domain> optDomain = domainService.getDomain(domainId);
@@ -166,6 +171,9 @@ import com.google.gson.JsonElement;
             }
             try {
                 userService.update(user);
+                if(changeEmail) {
+                    userService.sendValidationEmail(user, authorizationInfo.getClientId());
+                }
             } catch (DuplicateKeyException e) {
                 return IamErrorResponseFactory.getInstance().conflict(new Error("conflict", "The email or username already exists"));
             }
@@ -409,6 +417,28 @@ import com.google.gson.JsonElement;
             @Auth AuthorizationInfo authorizationInfo) {
         userService.sendMailResetPassword(email, authorizationInfo.getClientId(), domainId);
         return Response.noContent().build();
+    }
+
+    @Path("/emailConfirmation")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response confirmEmail(@PathParam("domain") String domainId, @Auth AuthorizationInfo authorizationInfo) {
+        // Email address is expected in token state.
+        String state = authorizationInfo.getTokenReader().getInfo().getState();
+        if (state == null) {
+            return ErrorResponseFactory.getInstance().badRequest();
+        }
+        userService.confirmEmail(domainId, state);
+        return Response.noContent().build();
+    }
+
+    @Path("/{userId}/validateEmail")
+    @GET
+    public Response generateValidationEmail(@PathParam("domain") String domainId, @PathParam("userId") String userId,
+                                            @Auth AuthorizationInfo authorizationInfo) {
+        User user = getUserResolvingMeAndUserDomainVerifying(userId, authorizationInfo.getUserId(), domainId);
+        userService.sendValidationEmail(user, authorizationInfo.getClientId());
+        return Response.ok().build();
     }
 
 

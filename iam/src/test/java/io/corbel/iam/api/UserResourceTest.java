@@ -20,8 +20,9 @@ import javax.ws.rs.core.Response;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.corbel.iam.model.*;
+import io.corbel.lib.token.TokenInfo;
+import io.corbel.lib.token.reader.TokenReader;
 import io.corbel.lib.ws.gson.GsonMessageReaderWriterProvider;
 import org.glassfish.jersey.client.ClientProperties;
 import org.junit.Before;
@@ -73,9 +74,11 @@ public class UserResourceTest extends UserResourceTestBase {
     private static final DomainService domainServiceMock = mock(DomainService.class);
     private static final IdentityService identityServiceMock = mock(IdentityService.class);
     private static final AuthorizationInfo authorizationInfoMock = mock(AuthorizationInfo.class);
+    private static final TokenReader tokenReaderMock = mock(TokenReader.class);
+    private static final TokenInfo tokenInfoMock = mock(TokenInfo.class);
     private static final QueryParser queryParserMock = mock(QueryParser.class);
     private static final DeviceService devicesServiceMock = mock(DeviceService.class);
-    public static final String NOT_ALLOWED_SCOPE = "notAllowedScope";
+    private static final String NOT_ALLOWED_SCOPE = "notAllowedScope";
     private static final String GROUPS_PATH = "/group";
     private static AggregationResultsFactory<JsonElement> aggregationResultsFactory = new JsonAggregationResultsFactory();
 
@@ -101,6 +104,8 @@ public class UserResourceTest extends UserResourceTestBase {
         when(authorizationInfoMock.getClientId()).thenReturn(TEST_CLIENT_ID);
         when(authorizationInfoMock.getDomainId()).thenReturn(TEST_DOMAIN_ID);
         when(authorizationInfoMock.getToken()).thenReturn(TEST_TOKEN);
+        when(authorizationInfoMock.getTokenReader()).thenReturn(tokenReaderMock);
+        when(tokenReaderMock.getInfo()).thenReturn(tokenInfoMock);
 
         HttpServletRequest requestMock = mock(HttpServletRequest.class);
         when(requestMock.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + TEST_TOKEN);
@@ -130,12 +135,12 @@ public class UserResourceTest extends UserResourceTestBase {
 
         User userWithCreationDate = getTestUser();
         userWithCreationDate.setCreatedDate(new Date());
-        when(userServiceMock.create(Mockito.any(User.class))).thenReturn(userWithCreationDate);
+        when(userServiceMock.create(eq(TEST_CLIENT_ID), Mockito.any(User.class))).thenReturn(userWithCreationDate);
 
         Response response = addUserClient().post(Entity.json(user), Response.class);
         assertThat(response.getStatus()).isEqualTo(201);
         assertThat(response.getHeaderString("Location")).contains(TEST_USER_ID);
-        verify(userServiceMock).create(userCaptor.capture());
+        verify(userServiceMock).create(eq(TEST_CLIENT_ID), userCaptor.capture());
         User storeUser = userCaptor.getValue();
         assertThat(storeUser.getScopes()).isEqualTo(TEST_DOMAIN.getDefaultScopes());
         assertThat(storeUser.getScopes()).doesNotContain(NOT_ALLOWED_SCOPE);
@@ -147,12 +152,12 @@ public class UserResourceTest extends UserResourceTestBase {
 
         User user = getTestUser();
         user.setScopes(null);
-        when(userServiceMock.create(Mockito.any(User.class))).thenReturn(user);
+        when(userServiceMock.create(eq(TEST_CLIENT_ID), Mockito.any(User.class))).thenReturn(user);
 
         Response response = addUserClient().post(Entity.json(user), Response.class);
         assertThat(response.getStatus()).isEqualTo(201);
         assertThat(response.getHeaderString("Location")).contains(TEST_USER_ID);
-        verify(userServiceMock).create(userCaptor.capture());
+        verify(userServiceMock).create(eq(TEST_CLIENT_ID), userCaptor.capture());
         User storeUser = userCaptor.getValue();
         assertThat(storeUser.getScopes()).isEqualTo(TEST_DOMAIN.getDefaultScopes());
     }
@@ -171,7 +176,7 @@ public class UserResourceTest extends UserResourceTestBase {
 
         userWithCreationDate.setCreatedDate(new Date());
 
-        when(userServiceMock.create(Mockito.any(User.class))).thenReturn(userWithCreationDate);
+        when(userServiceMock.create(eq(TEST_CLIENT_ID), Mockito.any(User.class))).thenReturn(userWithCreationDate);
         Response response = addUserClient().post(Entity.json(user), Response.class);
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.readEntity(Error.class).getError()).isEqualTo("invalid_argument");
@@ -183,7 +188,7 @@ public class UserResourceTest extends UserResourceTestBase {
         when(domainServiceMock.scopesAllowedInDomain(TEST_SCOPES, TEST_DOMAIN)).thenReturn(true);
         User user = getTestUser();
         user.setId(null);
-        when(userServiceMock.create(any())).thenThrow((Class) CreateUserException.class);
+        when(userServiceMock.create(eq(TEST_CLIENT_ID), any())).thenThrow((Class) CreateUserException.class);
 
         Response response = addUserClient().post(Entity.json(user), Response.class);
         assertThat(response.getStatus()).isEqualTo(409);
@@ -211,7 +216,7 @@ public class UserResourceTest extends UserResourceTestBase {
         when(domainServiceMock.scopesAllowedInDomain(TEST_SCOPES, TEST_DOMAIN)).thenReturn(false);
         User user = createTestUser();
         when(userServiceMock.findById(TEST_USER_ID)).thenReturn(createTestUser());
-        when(userServiceMock.create(Mockito.eq(removeId(createTestUser())))).thenReturn(user);
+        when(userServiceMock.create(eq(TEST_CLIENT_ID), Mockito.eq(removeId(createTestUser())))).thenReturn(user);
         Response response = getUserClient(TEST_USER_ID).put(Entity.json(user), Response.class);
         assertThat(response.getStatus()).isEqualTo(403);
     }
@@ -1185,6 +1190,43 @@ public class UserResourceTest extends UserResourceTestBase {
                 .request(MediaType.APPLICATION_JSON_TYPE).header(AUTHORIZATION, "Bearer " + TEST_TOKEN).get(Response.class);
 
         assertThat(response.getStatus()).isEqualTo(Response.Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    public void testEmailConfirmationWithoutState() {
+        Response response = RULE.client().target("/v1.0/" + TEST_DOMAIN_ID + "/user/emailConfirmation")
+                .request(MediaType.APPLICATION_JSON_TYPE).header(AUTHORIZATION, "Bearer " + TEST_TOKEN).put(Entity.json("{}"), Response.class);
+
+        assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
+    }
+
+    @Test
+    public void testEmailConfirmationWithState() {
+        when(tokenInfoMock.getState()).thenReturn(TEST_STATE);
+        Response response = RULE.client().target("/v1.0/" + TEST_DOMAIN_ID + "/user/emailConfirmation")
+                .request(MediaType.APPLICATION_JSON_TYPE).header(AUTHORIZATION, "Bearer " + TEST_TOKEN).put(Entity.json("{}"), Response.class);
+
+        assertThat(response.getStatus()).isEqualTo(Response.Status.NO_CONTENT.getStatusCode());
+    }
+
+    @Test
+    public void sendEmailConfirmationNotExistsUser() {
+        Response response = RULE.client().target("/v1.0/" + TEST_DOMAIN_ID + "/user/" + TEST_USER_ID + "/validateEmail")
+                .request(MediaType.APPLICATION_JSON).header(AUTHORIZATION, "Bearer " + TEST_TOKEN)
+                .get(Response.class);
+
+        assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+    }
+
+    @Test
+    public void sendEmailConfirmation() {
+        when(userServiceMock.findById(TEST_USER_ID)).thenReturn(createTestUser());
+
+        Response response = RULE.client().target("/v1.0/" + TEST_DOMAIN_ID + "/user/" + TEST_USER_ID + "/validateEmail")
+                .request(MediaType.APPLICATION_JSON).header(AUTHORIZATION, "Bearer " + TEST_TOKEN)
+                .get(Response.class);
+
+        assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
     }
 
     @Test

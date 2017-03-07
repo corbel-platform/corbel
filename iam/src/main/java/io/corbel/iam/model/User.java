@@ -30,6 +30,7 @@ public class User extends TraceableEntity implements HasScopes {
     private Map<String, Object> properties = new HashMap<>();
     private String salt;
     private String password;
+    private Boolean emailValidated;
     private Set<String> groups = new HashSet<>();
 
     public User() {
@@ -196,6 +197,7 @@ public class User extends TraceableEntity implements HasScopes {
         }
         if (updateUser.getEmail() != null) {
             setEmail(updateUser.getEmail());
+            setEmailValidated(false);
         }
         if (updateUser.getFirstName() != null) {
             setFirstName(updateUser.getFirstName());
@@ -232,6 +234,14 @@ public class User extends TraceableEntity implements HasScopes {
             this.salt = updateUser.salt;
         }
         ModelValidator.validateObject(this);
+    }
+
+    public Boolean getEmailValidated() {
+        return emailValidated;
+    }
+
+    public void setEmailValidated(Boolean emailValidated) {
+        this.emailValidated = emailValidated;
     }
 
     public Set<String> getGroups() {
