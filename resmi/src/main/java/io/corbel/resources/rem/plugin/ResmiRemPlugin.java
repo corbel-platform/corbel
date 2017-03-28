@@ -44,7 +44,6 @@ import com.codahale.metrics.health.HealthCheck;
 
     @Override
     protected void console() {
-        init();
         shell.setResmiService(context.getBean(ResmiService.class));
         shell.setElasticSearchService(context.getBean(ElasticSearchService.class));
         shell.setResmiSearch(context.getBean(ResmiSearch.class));
