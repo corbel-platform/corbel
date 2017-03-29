@@ -30,6 +30,7 @@ import io.corbel.iam.repository.IdentityRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+@Ignore
 public class FacebookProviderTest {
 
     private static final String CLIENT_SECRET = "d74e4ddea4ed89b51959d414d6fc13c0";
