@@ -2,6 +2,7 @@ package io.corbel.resources;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -22,7 +23,10 @@ public class ResourcesConsoleRunner extends Console {
 
     @SuppressWarnings("resource")
     private static Map<String, Object> createShell() {
-        System.setProperty("mode", "console");
+        String mode = Optional.ofNullable(System.getProperty("mode"))
+                .orElse(Optional.ofNullable(System.getenv("MODE"))
+                        .orElse("console_fast"));
+        System.setProperty("mode", mode);
         System.setProperty("conf.namespace", "resources");
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(ResourcesIoc.class);
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Shell.class);

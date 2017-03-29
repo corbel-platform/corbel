@@ -49,9 +49,9 @@ public abstract class RemPlugin implements InitializingBean {
 
     @Override
     public final void afterPropertiesSet() throws Exception {
-        if (Mode.SERVICE.equals(mode)) {
+        init();
+        if (!Mode.CONSOLE_FAST.equals(mode)) {
             try {
-                init();
                 checkVersion();
                 register(registry);
                 addRelations(relationRegistry);
@@ -64,7 +64,8 @@ public abstract class RemPlugin implements InitializingBean {
                     throw e;
                 }
             }
-        } else {
+        }
+        if(!Mode.SERVICE.equals(mode)) {
             console();
         }
     }

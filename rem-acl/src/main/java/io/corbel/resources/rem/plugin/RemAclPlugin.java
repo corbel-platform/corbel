@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
     private static final String ACL_CONFIGURATION_COLLECTION = "acl:Configuration";
 
     private String aclConfigurationCollection;
+    private AclConfigurationService aclConfigurationService;
 
     @Override
     protected void init() {
@@ -64,18 +65,17 @@ import org.springframework.stereotype.Component;
         AclResourcesService aclResourcesService = context.getBean(AclResourcesService.class);
         aclResourcesService.setRemService(remService);
 
-        AclConfigurationService aclConfigurationService = context.getBean(AclConfigurationService.class);
+        aclConfigurationService = context.getBean(AclConfigurationService.class);
         aclConfigurationService.setRemService(remService);
         aclConfigurationService.setRemsAndMethods(remsAndMethods);
 
         context.getBean(AclConfigurationEventHandler.class).setAclConfigurationService(aclConfigurationService);
         aclConfigurationCollection = context.getEnvironment().getProperty("rem.acl.configuration.collection", ACL_CONFIGURATION_COLLECTION);
-
-        aclConfigurationService.refreshRegistry();
     }
 
     @Override
     protected void register(RemRegistry registry) {
+        aclConfigurationService.refreshRegistry();
         registry.registerRem(context.getBean(AclRemNames.SETUP_PUT, Rem.class), ".*", MediaType.valueOf(ACL_MEDIA_TYPE), HttpMethod.PUT);
         registry.registerRem(context.getBean(AclRemNames.ADMIN_POST, Rem.class), aclConfigurationCollection, MediaType.ALL, HttpMethod.POST);
         registry.registerRem(context.getBean(AclRemNames.ADMIN_PUT, Rem.class), aclConfigurationCollection, MediaType.ALL, HttpMethod.PUT);
