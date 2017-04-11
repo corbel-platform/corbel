@@ -1,5 +1,6 @@
 package io.corbel.iam.api;
 
+import com.google.common.net.HttpHeaders;
 import io.corbel.iam.exception.DuplicatedOauthServiceIdentityException;
 import io.corbel.iam.exception.IdentityAlreadyExistsException;
 import io.corbel.iam.exception.UserProfileConfigurationException;
@@ -12,10 +13,7 @@ import io.corbel.iam.model.TraceableEntity;
 import io.corbel.iam.model.User;
 import io.corbel.iam.model.UserWithIdentity;
 import io.corbel.iam.repository.CreateUserException;
-import io.corbel.iam.service.DeviceService;
-import io.corbel.iam.service.DomainService;
-import io.corbel.iam.service.IdentityService;
-import io.corbel.iam.service.UserService;
+import io.corbel.iam.service.*;
 import io.corbel.iam.utils.Message;
 import io.corbel.lib.queries.builder.ResourceQueryBuilder;
 import io.corbel.lib.queries.jaxrs.QueryParameters;
@@ -28,6 +26,7 @@ import io.corbel.lib.queries.request.Sort;
 import io.corbel.lib.ws.annotation.Rest;
 import io.corbel.lib.ws.api.error.ErrorResponseFactory;
 import io.corbel.lib.ws.auth.AuthorizationInfo;
+import io.corbel.lib.ws.model.CustomHeaders;
 import io.corbel.lib.ws.model.Error;
 import io.dropwizard.auth.Auth;
 
@@ -45,16 +44,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -78,16 +68,18 @@ import com.google.gson.JsonElement;
     private final UserService userService;
     private final IdentityService identityService;
     private final DomainService domainService;
+    private final CaptchaService captchaService;
     private final Clock clock;
     private final DeviceService deviceService;
     private final AggregationResultsFactory<JsonElement> aggregationResultsFactory;
 
     public UserResource(UserService userService, DomainService domainService, IdentityService identityService, DeviceService deviceService,
-            AggregationResultsFactory<JsonElement> aggregationResultsFactory, Clock clock) {
+                        CaptchaService captchaService, AggregationResultsFactory<JsonElement> aggregationResultsFactory, Clock clock) {
         this.userService = userService;
         this.domainService = domainService;
         this.identityService = identityService;
         this.deviceService = deviceService;
+        this.captchaService = captchaService;
         this.clock = clock;
         this.aggregationResultsFactory = aggregationResultsFactory;
     }
@@ -111,7 +103,11 @@ import com.google.gson.JsonElement;
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postUser(@PathParam("domain") String domainId, @Valid UserWithIdentity user, @Context UriInfo uriInfo,
-            @Auth AuthorizationInfo authorizationInfo) {
+            @Auth AuthorizationInfo authorizationInfo, @HeaderParam(CustomHeaders.X_CAPTCHA) String captcha) {
+
+        if(!captchaService.verifyRequestCaptcha(domainId, captcha)) {
+            return IamErrorResponseFactory.getInstance().unauthorized();
+        }
 
         return domainService.getDomain(domainId).map(domain -> {
             user.setEmailValidated(false);
@@ -414,8 +410,11 @@ import com.google.gson.JsonElement;
     @Path("/resetPassword")
     @GET
     public Response generateResetPasswordEmail(@PathParam("domain") String domainId, @QueryParam("email") String email,
-            @Auth AuthorizationInfo authorizationInfo) {
-        userService.sendMailResetPassword(email, authorizationInfo.getClientId(), domainId);
+                                               @HeaderParam(CustomHeaders.X_CAPTCHA) String captcha,
+                                               @Auth AuthorizationInfo authorizationInfo) {
+        if(captchaService.verifyRequestCaptcha(domainId, captcha)) {
+            userService.sendMailResetPassword(email, authorizationInfo.getClientId(), domainId);
+        }
         return Response.noContent().build();
     }
 

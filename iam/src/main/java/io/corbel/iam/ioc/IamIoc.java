@@ -163,8 +163,10 @@ public class IamIoc {
 
     @Bean
     public UserResource getUserResource(UserService userService, DomainService domainService, IdentityService identityService,
-                                        DeviceService deviceService, AggregationResultsFactory aggregationResultsFactory) {
-        return new UserResource(userService, domainService, identityService, deviceService, aggregationResultsFactory, Clock.systemUTC());
+                                        DeviceService deviceService, CaptchaService captchaService,
+                                        AggregationResultsFactory aggregationResultsFactory) {
+        return new UserResource(userService, domainService, identityService, deviceService, captchaService,
+                                aggregationResultsFactory, Clock.systemUTC());
     }
 
     @Bean
@@ -338,6 +340,11 @@ public class IamIoc {
     @Bean
     public UpgradeTokenService getUpgradeTokenService(ScopeService scopeService) {
         return new DefaultUpgradeTokenService(getTokenUpgradeJsonTokenParser(), scopeService, userTokenRepository);
+    }
+
+    @Bean
+    public CaptchaService getCaptchaService(DomainService domainService) {
+        return new DefaultCaptchaService(domainService);
     }
 
     @Bean

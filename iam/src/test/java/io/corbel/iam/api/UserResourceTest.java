@@ -21,6 +21,7 @@ import javax.ws.rs.core.Response;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
 import io.corbel.iam.model.*;
+import io.corbel.iam.service.*;
 import io.corbel.lib.token.TokenInfo;
 import io.corbel.lib.token.reader.TokenReader;
 import io.corbel.lib.ws.gson.GsonMessageReaderWriterProvider;
@@ -35,10 +36,6 @@ import io.corbel.iam.exception.DuplicatedOauthServiceIdentityException;
 import io.corbel.iam.exception.IdentityAlreadyExistsException;
 import io.corbel.iam.exception.UserProfileConfigurationException;
 import io.corbel.iam.repository.CreateUserException;
-import io.corbel.iam.service.DeviceService;
-import io.corbel.iam.service.DomainService;
-import io.corbel.iam.service.IdentityService;
-import io.corbel.iam.service.UserService;
 import io.corbel.lib.queries.builder.ResourceQueryBuilder;
 import io.corbel.lib.queries.exception.MalformedJsonQueryException;
 import io.corbel.lib.queries.parser.*;
@@ -78,6 +75,7 @@ public class UserResourceTest extends UserResourceTestBase {
     private static final TokenInfo tokenInfoMock = mock(TokenInfo.class);
     private static final QueryParser queryParserMock = mock(QueryParser.class);
     private static final DeviceService devicesServiceMock = mock(DeviceService.class);
+    private static final CaptchaService captchaServiceMock = mock(CaptchaService.class);
     private static final String NOT_ALLOWED_SCOPE = "notAllowedScope";
     private static final String GROUPS_PATH = "/group";
     private static AggregationResultsFactory<JsonElement> aggregationResultsFactory = new JsonAggregationResultsFactory();
@@ -92,7 +90,8 @@ public class UserResourceTest extends UserResourceTestBase {
     @ClassRule public static ResourceTestRule RULE = ResourceTestRule
             .builder()
             .addProvider(new GsonMessageReaderWriterProvider())
-            .addResource(new UserResource(userServiceMock, domainServiceMock, identityServiceMock, devicesServiceMock, aggregationResultsFactory, Clock.systemUTC()))
+            .addResource(new UserResource(userServiceMock, domainServiceMock, identityServiceMock, devicesServiceMock, captchaServiceMock,
+                                          aggregationResultsFactory, Clock.systemUTC()))
             .addProvider(filter)
             .addProvider(new AuthorizationInfoProvider().getBinder())
             .addProvider(
@@ -123,6 +122,7 @@ public class UserResourceTest extends UserResourceTestBase {
     public void setUp() {
         reset(userServiceMock, domainServiceMock, identityServiceMock);
         when(TEST_DOMAIN.getDefaultScopes()).thenReturn(ImmutableSet.of("defaultScope1", "defaultScope2"));
+        when(captchaServiceMock.verifyRequestCaptcha(TEST_DOMAIN_ID, null)).thenReturn(true);
         when(domainServiceMock.getDomain(TEST_DOMAIN_ID)).thenReturn(Optional.of(TEST_DOMAIN));
     }
 
@@ -1188,7 +1188,7 @@ public class UserResourceTest extends UserResourceTestBase {
     public void testGenerateResetPasswordEmail() {
         Response response = RULE.client().target("/v1.0/" + TEST_DOMAIN_ID + "/user/resetPassword")
                 .request(MediaType.APPLICATION_JSON_TYPE).header(AUTHORIZATION, "Bearer " + TEST_TOKEN).get(Response.class);
-
+        when(captchaServiceMock.verifyRequestCaptcha(TEST_DOMAIN_ID, null)).thenReturn(true);
         assertThat(response.getStatus()).isEqualTo(Response.Status.NO_CONTENT.getStatusCode());
     }
 

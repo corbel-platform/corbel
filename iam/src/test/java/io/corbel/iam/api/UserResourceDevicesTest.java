@@ -14,10 +14,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import io.corbel.iam.model.Device;
 import io.corbel.iam.model.DeviceResponse;
-import io.corbel.iam.service.DeviceService;
-import io.corbel.iam.service.DomainService;
-import io.corbel.iam.service.IdentityService;
-import io.corbel.iam.service.UserService;
+import io.corbel.iam.service.*;
 import io.corbel.lib.queries.exception.MalformedJsonQueryException;
 import io.corbel.lib.queries.parser.AggregationParser;
 import io.corbel.lib.queries.parser.PaginationParser;
@@ -77,6 +74,7 @@ public class UserResourceDevicesTest extends UserResourceTestBase {
     private static final IdentityService identityServiceMock = mock(IdentityService.class);
     private static final AuthorizationInfo authorizationInfoMock = mock(AuthorizationInfo.class);
     private static final DeviceService devicesServiceMock = mock(DeviceService.class);
+    private static final CaptchaService captchaServiceMock = mock(CaptchaService.class);
     private static final AuthorizationInfoProvider authorizationInfoProvider = new AuthorizationInfoProvider();
     private static final String TEST_DEVICE_NAME = "My device name";
     private static final String TEST_DEVICE_URI = "Test device URI";
@@ -96,7 +94,7 @@ public class UserResourceDevicesTest extends UserResourceTestBase {
             .builder()
             .addResource(
                     new UserResource(userServiceMock, domainServiceMock, identityServiceMock, devicesServiceMock,
-                            aggregationResultsFactory, FIXED_CLOCK))
+                            captchaServiceMock, aggregationResultsFactory, FIXED_CLOCK))
             .addProvider(filter)
             .addProvider(authorizationInfoProvider.getBinder())
             .addProvider(
