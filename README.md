@@ -16,7 +16,7 @@ mvn install -DdockerBuild=true
 ### Run with Docker Compose
 
 ```
-docker-compose up
+sudo docker-compose up
 ```
 
 
