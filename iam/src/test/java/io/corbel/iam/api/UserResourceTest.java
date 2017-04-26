@@ -122,7 +122,7 @@ public class UserResourceTest extends UserResourceTestBase {
     public void setUp() {
         reset(userServiceMock, domainServiceMock, identityServiceMock);
         when(TEST_DOMAIN.getDefaultScopes()).thenReturn(ImmutableSet.of("defaultScope1", "defaultScope2"));
-        when(captchaServiceMock.verifyRequestCaptcha(TEST_DOMAIN_ID, null)).thenReturn(true);
+        when(captchaServiceMock.verifyRequestCaptcha(TEST_DOMAIN_ID, TEST_CLIENT_ID, null)).thenReturn(true);
         when(domainServiceMock.getDomain(TEST_DOMAIN_ID)).thenReturn(Optional.of(TEST_DOMAIN));
     }
 
@@ -1188,7 +1188,7 @@ public class UserResourceTest extends UserResourceTestBase {
     public void testGenerateResetPasswordEmail() {
         Response response = RULE.client().target("/v1.0/" + TEST_DOMAIN_ID + "/user/resetPassword")
                 .request(MediaType.APPLICATION_JSON_TYPE).header(AUTHORIZATION, "Bearer " + TEST_TOKEN).get(Response.class);
-        when(captchaServiceMock.verifyRequestCaptcha(TEST_DOMAIN_ID, null)).thenReturn(true);
+        when(captchaServiceMock.verifyRequestCaptcha(TEST_DOMAIN_ID, TEST_CLIENT_ID, null)).thenReturn(true);
         assertThat(response.getStatus()).isEqualTo(Response.Status.NO_CONTENT.getStatusCode());
     }
 

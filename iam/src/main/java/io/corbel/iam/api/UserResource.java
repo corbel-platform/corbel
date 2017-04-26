@@ -105,7 +105,7 @@ import com.google.gson.JsonElement;
     public Response postUser(@PathParam("domain") String domainId, @Valid UserWithIdentity user, @Context UriInfo uriInfo,
             @Auth AuthorizationInfo authorizationInfo, @HeaderParam(CustomHeaders.X_CAPTCHA) String captcha) {
 
-        if(!captchaService.verifyRequestCaptcha(domainId, captcha)) {
+        if(!captchaService.verifyRequestCaptcha(domainId, authorizationInfo.getClientId(), captcha)) {
             return IamErrorResponseFactory.getInstance().unauthorized();
         }
 
@@ -412,7 +412,7 @@ import com.google.gson.JsonElement;
     public Response generateResetPasswordEmail(@PathParam("domain") String domainId, @QueryParam("email") String email,
                                                @HeaderParam(CustomHeaders.X_CAPTCHA) String captcha,
                                                @Auth AuthorizationInfo authorizationInfo) {
-        if(captchaService.verifyRequestCaptcha(domainId, captcha)) {
+        if(captchaService.verifyRequestCaptcha(domainId, authorizationInfo.getClientId(), captcha)) {
             userService.sendMailResetPassword(email, authorizationInfo.getClientId(), domainId);
         }
         return Response.noContent().build();

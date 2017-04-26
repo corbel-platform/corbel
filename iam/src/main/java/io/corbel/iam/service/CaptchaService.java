@@ -5,6 +5,6 @@ package io.corbel.iam.service;
  */
 public interface CaptchaService {
 
-    boolean verifyRequestCaptcha(String domainId, String captcha);
+    boolean verifyRequestCaptcha(String domainId, String clientId, String captcha);
 
 }
