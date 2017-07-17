@@ -6,6 +6,7 @@ import io.corbel.notifications.api.DomainResource;
 import io.corbel.notifications.model.NotificationTemplate;
 import io.corbel.notifications.model.NotificationTemplateIdGenerator;
 import io.corbel.notifications.repository.DomainRepository;
+import io.corbel.notifications.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -30,15 +31,6 @@ import io.corbel.lib.ws.ioc.QueriesIoc;
 import io.corbel.notifications.api.NotificationsResource;
 import io.corbel.notifications.cli.dsl.NotificationsShell;
 import io.corbel.notifications.repository.NotificationRepository;
-import io.corbel.notifications.service.AndroidPushNotificationsService;
-import io.corbel.notifications.service.IosPushNotificationsService;
-import io.corbel.notifications.service.DefaultSenderNotificationsService;
-import io.corbel.notifications.service.EmailNotificationsService;
-import io.corbel.notifications.service.NotificationsDispatcher;
-import io.corbel.notifications.service.NotificationsService;
-import io.corbel.notifications.service.NotificationsServiceFactory;
-import io.corbel.notifications.service.SenderNotificationsService;
-import io.corbel.notifications.service.SpringNotificationsServiceFactory;
 import io.corbel.notifications.template.DefaultNotificationFiller;
 import io.corbel.notifications.template.NotificationFiller;
 
@@ -105,7 +97,7 @@ import io.corbel.notifications.template.NotificationFiller;
     @Bean(name = "android")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public NotificationsService getAndroidPushNotificationService() {
-        return new AndroidPushNotificationsService();
+        return new AndroidFCMPushNotificationsService();
     }
 
     @Bean(name = "ios")
