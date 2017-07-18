@@ -56,11 +56,6 @@
             <version>1.0.0.Beta6</version>
         </dependency>
         <dependency>
-            <groupId>com.google.gcm</groupId>
-            <artifactId>gcm-server</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>us.raudi.pushraven</groupId>
             <artifactId>Pushraven</artifactId>
             <version>1.0.2</version>

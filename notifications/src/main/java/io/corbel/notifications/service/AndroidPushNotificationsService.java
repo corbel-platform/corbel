@@ -1,13 +1,10 @@
 package io.corbel.notifications.service;
 
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Sender;
 import io.corbel.notifications.model.Domain;
 import io.corbel.notifications.model.NotificationTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
+import us.raudi.pushraven.Pushraven;
 import java.util.Arrays;
 
 /**
@@ -15,19 +12,20 @@ import java.util.Arrays;
  */
 public class AndroidPushNotificationsService implements NotificationsService {
 
-    private final int PUSH_NOTIFICATIONS_RETRIES = 5;
-
     private static final Logger LOG = LoggerFactory.getLogger(AndroidPushNotificationsService.class);
 
     @Override
     public void send(Domain domain, NotificationTemplate notificationTemplate, String... recipients) {
-        Sender sender = new Sender(notificationTemplate.getSender());
-        Message msg = new Message.Builder().addData("message", notificationTemplate.getText()).build();
+        Pushraven.setKey(notificationTemplate.getSender());
+        Pushraven.notification.title(notificationTemplate.getTitle()).text(notificationTemplate.getText());
+        Pushraven.notification.addAllMulticasts(Arrays.asList(recipients));
         try {
-            sender.send(msg, Arrays.asList(recipients), PUSH_NOTIFICATIONS_RETRIES);
-            LOG.info("Android push notification sent to: " + Arrays.toString(recipients));
-        } catch (IOException e) {
-            LOG.error("Sending android push notification error: {}", e.getMessage(), e);
+            Pushraven.push();
+            LOG.info("Android FCM push notification sent to: " + Arrays.toString(recipients));
+        } catch (Exception e) {
+            LOG.error("Sending android FCM push notification error: {}", e.getMessage(), e);
+        } finally {
+            Pushraven.notification.clear();
         }
     }
 
