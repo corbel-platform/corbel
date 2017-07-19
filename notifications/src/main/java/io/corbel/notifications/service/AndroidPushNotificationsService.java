@@ -4,7 +4,6 @@ import io.corbel.notifications.model.Domain;
 import io.corbel.notifications.model.NotificationTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import us.raudi.pushraven.FcmResponse;
 import us.raudi.pushraven.Pushraven;
 import java.util.Arrays;
 
