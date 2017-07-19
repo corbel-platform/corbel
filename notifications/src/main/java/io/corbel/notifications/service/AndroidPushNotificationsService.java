@@ -21,7 +21,7 @@ public class AndroidPushNotificationsService implements NotificationsService {
         Pushraven.notification.title(notificationTemplate.getTitle()).text(notificationTemplate.getText());
         Pushraven.notification.addAllMulticasts(Arrays.asList(recipients));
         try {
-            FcmResponse response = Pushraven.push();
+            Pushraven.push();
             LOG.info("Android push notification sent to: " + Arrays.toString(recipients));
         } catch (Exception e) {
             LOG.error("Sending android FCM push notification error: {}", e.getMessage(), e);
