@@ -4,6 +4,7 @@ import io.corbel.notifications.model.Domain;
 import io.corbel.notifications.model.NotificationTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import us.raudi.pushraven.FcmResponse;
 import us.raudi.pushraven.Pushraven;
 import java.util.Arrays;
 
@@ -20,8 +21,8 @@ public class AndroidPushNotificationsService implements NotificationsService {
         Pushraven.notification.title(notificationTemplate.getTitle()).text(notificationTemplate.getText());
         Pushraven.notification.addAllMulticasts(Arrays.asList(recipients));
         try {
-            Pushraven.push();
-            LOG.info("Android FCM push notification sent to: " + Arrays.toString(recipients));
+            FcmResponse response = Pushraven.push();
+            LOG.info("Android push notification sent to: " + Arrays.toString(recipients));
         } catch (Exception e) {
             LOG.error("Sending android FCM push notification error: {}", e.getMessage(), e);
         } finally {
