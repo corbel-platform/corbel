@@ -17,6 +17,9 @@ public class Domain {
     @NotNull
     private Map<String, String> templates;
 
+    @NotNull
+    private Map<String, Boolean> internationalizations;
+
     private Boolean developmentMode;
 
     private String iosNotificationsCertificate;
@@ -45,6 +48,18 @@ public class Domain {
 
     public void setTemplates(Map<String, String> templates) {
         this.templates = templates;
+    }
+
+    public Map<String, Boolean> getInternationalizations() {
+        return internationalizations;
+    }
+
+    public void setInternationalizations(Map<String, Boolean> internationalizations) {
+        this.internationalizations = internationalizations;
+    }
+
+    public Boolean getDevelopmentMode() {
+        return developmentMode;
     }
 
     public Boolean isDevelopmentMode() {
@@ -78,6 +93,9 @@ public class Domain {
         if(domain.getTemplates()!= null && !domain.getTemplates().isEmpty()) {
             setTemplates(domain.getTemplates());
         }
+        if(domain.getInternationalizations()!= null && !domain.getInternationalizations().isEmpty()) {
+            setInternationalizations(domain.getInternationalizations());
+        }
     }
 
     @Override
@@ -90,12 +108,13 @@ public class Domain {
         if (id != null ? !id.equals(domain.id) : domain.id != null) return false;
         if (properties != null ? !properties.equals(domain.properties) : domain.properties != null) return false;
         if (templates != null ? !templates.equals(domain.templates) : domain.templates != null) return false;
+        if (internationalizations != null ? !internationalizations.equals(domain.internationalizations) : domain.internationalizations != null)
+            return false;
         if (developmentMode != null ? !developmentMode.equals(domain.developmentMode) : domain.developmentMode != null)
             return false;
         if (iosNotificationsCertificate != null ? !iosNotificationsCertificate.equals(domain.iosNotificationsCertificate) : domain.iosNotificationsCertificate != null)
             return false;
         return iosNotificationsPassword != null ? iosNotificationsPassword.equals(domain.iosNotificationsPassword) : domain.iosNotificationsPassword == null;
-
     }
 
     @Override
@@ -103,6 +122,7 @@ public class Domain {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (properties != null ? properties.hashCode() : 0);
         result = 31 * result + (templates != null ? templates.hashCode() : 0);
+        result = 31 * result + (internationalizations != null ? internationalizations.hashCode() : 0);
         result = 31 * result + (developmentMode != null ? developmentMode.hashCode() : 0);
         result = 31 * result + (iosNotificationsCertificate != null ? iosNotificationsCertificate.hashCode() : 0);
         result = 31 * result + (iosNotificationsPassword != null ? iosNotificationsPassword.hashCode() : 0);

@@ -17,19 +17,27 @@ import java.util.Optional;
  */
 public class DefaultSenderNotificationsService implements SenderNotificationsService {
 
-    NotificationFiller notificationFiller;
-    NotificationsDispatcher notificationsDispatcher;
-    NotificationRepository notificationRepository;
-    DomainRepository domainRepository;
+    private static final String LANGUAGE_SEPARATOR = ":";
+
+    private final NotificationFiller notificationFiller;
+    private final NotificationsDispatcher notificationsDispatcher;
+    private final NotificationRepository notificationRepository;
+    private final DomainRepository domainRepository;
+    private final String languageProperty;
+    private final String defaultLanguage;
 
     public DefaultSenderNotificationsService(NotificationFiller notificationFiller,
                                              NotificationsDispatcher notificationsDispatcher,
                                              NotificationRepository notificationRepository,
-                                             DomainRepository domainRepository) {
+                                             DomainRepository domainRepository,
+                                             String languageProperty,
+                                             String defaultLanguage) {
         this.notificationFiller = notificationFiller;
         this.notificationsDispatcher = notificationsDispatcher;
         this.notificationRepository = notificationRepository;
         this.domainRepository = domainRepository;
+        this.languageProperty = languageProperty;
+        this.defaultLanguage = defaultLanguage;
     }
 
     @Override
@@ -43,10 +51,17 @@ public class DefaultSenderNotificationsService implements SenderNotificationsSer
                 .map(currentTemplate -> currentTemplate.get(currentNotificationId))
                 .orElse(currentNotificationId);
 
+        boolean internationalizated = Optional.ofNullable(domain).map(Domain::getInternationalizations)
+                                      .map(i -> i.get(currentNotificationId)).orElse(false);
+
         Map<String, String> properties = Optional.ofNullable(domain)
                 .map(currentDomain -> getProperties(currentDomain, customProperties))
                 .orElse(customProperties);
 
+        if(internationalizated) {
+            String lang = properties.getOrDefault(languageProperty, defaultLanguage);
+            notificationTemplateId = notificationTemplateId + LANGUAGE_SEPARATOR + lang;
+        }
 
         NotificationTemplate notificationTemplate = notificationRepository.findOne(notificationTemplateId);
         if (notificationTemplate != null) {

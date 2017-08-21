@@ -70,7 +70,7 @@ import io.corbel.notifications.template.NotificationFiller;
     public SenderNotificationsService getNotificationsEventService(NotificationRepository notificationRepository,
             NotificationsDispatcher notificationsDispatcher, DomainRepository domainRepository) {
         return new DefaultSenderNotificationsService(getTemplateFiller(), notificationsDispatcher, notificationRepository,
-                domainRepository);
+                domainRepository, env.getProperty("notifications.language.property"), env.getProperty("notifications.language.default"));
     }
 
     @Bean

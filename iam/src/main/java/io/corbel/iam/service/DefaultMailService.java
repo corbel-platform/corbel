@@ -91,6 +91,8 @@ public class DefaultMailService implements MailService {
         properties.put("email", user.getEmail());
         properties.put("firstName", Optional.ofNullable(user.getFirstName()).orElse(""));
         properties.put("lastName", Optional.ofNullable(user.getLastName()).orElse(""));
+        user.getProperties().entrySet().parallelStream().filter(p -> p.getValue() instanceof String)
+                                       .forEach(p -> properties.put(p.getKey(), p.getValue().toString()));
 
         eventsService.sendNotificationEvent(user.getDomain(), notificationId, user.getEmail(), properties);
     }

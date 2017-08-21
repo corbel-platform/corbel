@@ -43,10 +43,13 @@ public class DefaultSenderNotificationsServiceTest {
 
 	private SenderNotificationsService senderNotificationsService;
 
+	private String languageProperty = "lang";
+	private String defaultLanguage = "en";
+
 	@Before
 	public void setUp() throws Exception {
 		senderNotificationsService = new DefaultSenderNotificationsService(notificationFiller, notificationsDispatcher,
-				notificationRepository, domainRepository);
+				notificationRepository, domainRepository, languageProperty, defaultLanguage);
 	}
 
 	@Test
