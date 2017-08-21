@@ -42,21 +42,20 @@ public class DefaultSenderNotificationsService implements SenderNotificationsSer
 
     @Override
     public void sendNotification(String domainId, String notificationId, Map<String, String> customProperties, String ... recipients) {
-        String currentNotificationId = DomainNameIdGenerator.generateNotificationTemplateId(domainId, notificationId);
 
         Domain domain = domainRepository.findOne(domainId);
 
         String notificationTemplateId = Optional.ofNullable(domain)
                 .map(Domain::getTemplates)
-                .map(currentTemplate -> currentTemplate.get(currentNotificationId))
-                .orElse(currentNotificationId);
-
-        boolean internationalizated = Optional.ofNullable(domain).map(Domain::getInternationalizations)
-                                      .map(i -> i.get(currentNotificationId)).orElse(false);
+                .map(currentTemplate -> currentTemplate.get(notificationId))
+                .orElse(DomainNameIdGenerator.generateNotificationTemplateId(domainId, notificationId));
 
         Map<String, String> properties = Optional.ofNullable(domain)
                 .map(currentDomain -> getProperties(currentDomain, customProperties))
                 .orElse(customProperties);
+
+        boolean internationalizated = Optional.ofNullable(domain).map(Domain::getInternationalizations)
+                .map(i -> i.get(notificationId)).orElse(false);
 
         if(internationalizated) {
             String lang = properties.getOrDefault(languageProperty, defaultLanguage);
