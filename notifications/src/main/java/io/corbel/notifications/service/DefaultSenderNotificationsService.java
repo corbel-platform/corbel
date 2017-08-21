@@ -45,10 +45,10 @@ public class DefaultSenderNotificationsService implements SenderNotificationsSer
 
         Domain domain = domainRepository.findOne(domainId);
 
-        String notificationTemplateId = Optional.ofNullable(domain)
-                .map(Domain::getTemplates)
+        String notificationTemplateId = DomainNameIdGenerator.generateNotificationTemplateId(domainId,
+                Optional.ofNullable(domain).map(Domain::getTemplates)
                 .map(currentTemplate -> currentTemplate.get(notificationId))
-                .orElse(DomainNameIdGenerator.generateNotificationTemplateId(domainId, notificationId));
+                .orElse(notificationId));
 
         Map<String, String> properties = Optional.ofNullable(domain)
                 .map(currentDomain -> getProperties(currentDomain, customProperties))
