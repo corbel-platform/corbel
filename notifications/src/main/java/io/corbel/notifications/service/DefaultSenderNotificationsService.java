@@ -54,10 +54,10 @@ public class DefaultSenderNotificationsService implements SenderNotificationsSer
                 .map(currentDomain -> getProperties(currentDomain, customProperties))
                 .orElse(customProperties);
 
-        boolean internationalizated = Optional.ofNullable(domain).map(Domain::getInternationalizations)
-                .map(i -> i.get(notificationId)).orElse(false);
+        boolean multiLanguageTemplate = Optional.ofNullable(domain).map(Domain::getMultiLanguageTemplates)
+                .map(t -> t.contains(notificationId)).orElse(false);
 
-        if(internationalizated) {
+        if(multiLanguageTemplate) {
             String lang = properties.getOrDefault(languageProperty, defaultLanguage);
             notificationTemplateId = notificationTemplateId + LANGUAGE_SEPARATOR + lang;
         }

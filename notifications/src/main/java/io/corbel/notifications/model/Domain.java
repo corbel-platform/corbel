@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 
 public class Domain {
@@ -18,7 +19,7 @@ public class Domain {
     private Map<String, String> templates;
 
     @NotNull
-    private Map<String, Boolean> internationalizations;
+    private List<String> multiLanguageTemplates;
 
     private Boolean developmentMode;
 
@@ -50,12 +51,12 @@ public class Domain {
         this.templates = templates;
     }
 
-    public Map<String, Boolean> getInternationalizations() {
-        return internationalizations;
+    public List<String> getMultiLanguageTemplates() {
+        return multiLanguageTemplates;
     }
 
-    public void setInternationalizations(Map<String, Boolean> internationalizations) {
-        this.internationalizations = internationalizations;
+    public void setMultiLanguageTemplates(List<String> multiLanguageTemplates) {
+        this.multiLanguageTemplates = multiLanguageTemplates;
     }
 
     public Boolean getDevelopmentMode() {
@@ -93,8 +94,8 @@ public class Domain {
         if(domain.getTemplates()!= null && !domain.getTemplates().isEmpty()) {
             setTemplates(domain.getTemplates());
         }
-        if(domain.getInternationalizations()!= null && !domain.getInternationalizations().isEmpty()) {
-            setInternationalizations(domain.getInternationalizations());
+        if(domain.getMultiLanguageTemplates() != null && !domain.getMultiLanguageTemplates().isEmpty()) {
+            setMultiLanguageTemplates(domain.getMultiLanguageTemplates());
         }
     }
 
@@ -108,7 +109,7 @@ public class Domain {
         if (id != null ? !id.equals(domain.id) : domain.id != null) return false;
         if (properties != null ? !properties.equals(domain.properties) : domain.properties != null) return false;
         if (templates != null ? !templates.equals(domain.templates) : domain.templates != null) return false;
-        if (internationalizations != null ? !internationalizations.equals(domain.internationalizations) : domain.internationalizations != null)
+        if (multiLanguageTemplates != null ? !multiLanguageTemplates.equals(domain.multiLanguageTemplates) : domain.multiLanguageTemplates != null)
             return false;
         if (developmentMode != null ? !developmentMode.equals(domain.developmentMode) : domain.developmentMode != null)
             return false;
@@ -122,7 +123,7 @@ public class Domain {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (properties != null ? properties.hashCode() : 0);
         result = 31 * result + (templates != null ? templates.hashCode() : 0);
-        result = 31 * result + (internationalizations != null ? internationalizations.hashCode() : 0);
+        result = 31 * result + (multiLanguageTemplates != null ? multiLanguageTemplates.hashCode() : 0);
         result = 31 * result + (developmentMode != null ? developmentMode.hashCode() : 0);
         result = 31 * result + (iosNotificationsCertificate != null ? iosNotificationsCertificate.hashCode() : 0);
         result = 31 * result + (iosNotificationsPassword != null ? iosNotificationsPassword.hashCode() : 0);

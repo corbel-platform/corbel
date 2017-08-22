@@ -54,7 +54,7 @@ class NotificationsShell {
         domain.id = domainFields.id
         domain.templates = domainFields.templates
         domain.properties = domainFields.properties
-        domain.internationalizations = domainFields.internationalizations
+        domain.multiLanguageTemplates = domainFields.multiLanguageTemplates
         domain.developmentMode = domainFields.developmentMode
         domain.iosNotificationsCertificate = domainFields.iosNotificationsCertificate
         domain.iosNotificationsPassword = domainFields.iosNotificationsPassword
