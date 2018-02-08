@@ -12,6 +12,7 @@ import java.util.Set;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class ScopeTest {
 
@@ -44,6 +45,16 @@ public class ScopeTest {
         assertFalse(validator.validate(verifiedScope).isEmpty());
     }
 
+    @Test
+    public void test() {
+        Set<JsonObject> jsonObjectSet = new HashSet<>();
+        jsonObjectSet.add(new JsonObject());
+        JsonObject parameters = new JsonObject();
+        parameters.addProperty("parameter1", ".*");
+        Scope scope = new Scope("ID", Scope.COMPOSITE_SCOPE_TYPE, "AUDIENCE", null, jsonObjectSet, parameters);
+    	assertEquals("ID;parameter1=.*",scope.getIdWithParameters());
+    }
+    
     private Scope getBasicScope(){
         Set<JsonObject> jsonObjectSet = new HashSet<>();
         jsonObjectSet.add(new JsonObject());
