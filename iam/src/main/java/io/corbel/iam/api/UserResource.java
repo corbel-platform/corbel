@@ -159,12 +159,7 @@ import com.google.gson.JsonElement;
             if (!optDomain.isPresent()) {
                 return IamErrorResponseFactory.getInstance().invalidEntity(Message.NOT_FOUND.getMessage());
             }
-
-            Domain domain = optDomain.get();
-
-            if (!domainService.scopesAllowedInDomain(user.getScopes(), domain)) {
-                return IamErrorResponseFactory.getInstance().scopesNotAllowed(domain.getId());
-            }
+            
             try {
                 userService.update(user);
                 if(changeEmail) {
