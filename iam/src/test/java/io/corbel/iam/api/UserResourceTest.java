@@ -212,16 +212,6 @@ public class UserResourceTest extends UserResourceTestBase {
     }
 
     @Test
-    public void testScopeNotAllowed() throws CreateUserException {
-        when(domainServiceMock.scopesAllowedInDomain(TEST_SCOPES, TEST_DOMAIN)).thenReturn(false);
-        User user = createTestUser();
-        when(userServiceMock.findById(TEST_USER_ID)).thenReturn(createTestUser());
-        when(userServiceMock.create(eq(TEST_CLIENT_ID), Mockito.eq(removeId(createTestUser())))).thenReturn(user);
-        Response response = getUserClient(TEST_USER_ID).put(Entity.json(user), Response.class);
-        assertThat(response.getStatus()).isEqualTo(403);
-    }
-
-    @Test
     public void testGetUser() {
         when(userServiceMock.findUserDomain(TEST_USER_ID)).thenReturn(TEST_DOMAIN_ID);
         User user = createTestUser();
@@ -553,21 +543,6 @@ public class UserResourceTest extends UserResourceTestBase {
         verify(userServiceMock).update(userCaptor.capture());
 
         assertThat(userCaptor.getValue().getScopes()).isEqualTo(newScopes);
-    }
-
-    @Test
-    public void testUpdateScopesNotAllow() {
-        Set<String> newScopes = new HashSet<>(TEST_SCOPES);
-        newScopes.add("new_scope");
-
-        when(domainServiceMock.scopesAllowedInDomain(newScopes, TEST_DOMAIN)).thenReturn(false);
-        when(userServiceMock.findById(TEST_USER_ID)).thenReturn(createTestUser());
-
-        User user = new User();
-        user.setScopes(newScopes);
-
-        Response response = getUserClient(TEST_USER_ID).put(Entity.json(user), Response.class);
-        assertThat(response.getStatus()).isEqualTo(403);
     }
 
     @Test
