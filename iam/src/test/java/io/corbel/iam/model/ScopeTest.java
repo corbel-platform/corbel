@@ -46,7 +46,7 @@ public class ScopeTest {
     }
 
     @Test
-    public void test() {
+    public void getIdWithParametersTest() {
         Set<JsonObject> jsonObjectSet = new HashSet<>();
         jsonObjectSet.add(new JsonObject());
         JsonObject parameters = new JsonObject();
