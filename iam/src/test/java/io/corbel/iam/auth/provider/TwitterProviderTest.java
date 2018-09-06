@@ -26,6 +26,7 @@ public class TwitterProviderTest {
     private static Provider twitterProvider;
     private static IdentityRepository identityRepositoryMock;
 
+    /*
     @BeforeClass
     public static void before() {
         Map<String, String> configuration = new HashMap<>();
@@ -48,6 +49,6 @@ public class TwitterProviderTest {
         String token = matcher.group(1);
         String query = "oauth_token=" + token + "&oauth_callback=http://testqacorbel.com/test?assertion=" + ASSERTION;
         assertThat(uri.getQuery()).isEqualTo(query);
-    }
+    }*/
 
 }
