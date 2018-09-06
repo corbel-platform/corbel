@@ -10,9 +10,9 @@ import java.util.Arrays;
 /**
  * Created by Alberto J. Rubio
  */
-public class AndroidPushNotificationsService implements NotificationsService {
+public class FCMPushNotificationsService implements NotificationsService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AndroidPushNotificationsService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FCMPushNotificationsService.class);
 
     @Override
     public void send(Domain domain, NotificationTemplate notificationTemplate, String... recipients) {

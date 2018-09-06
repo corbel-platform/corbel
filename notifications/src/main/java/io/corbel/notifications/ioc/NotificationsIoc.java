@@ -97,8 +97,15 @@ import io.corbel.notifications.template.NotificationFiller;
     @Bean(name = "android")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public NotificationsService getAndroidPushNotificationService() {
-        return new AndroidPushNotificationsService();
+        return new FCMPushNotificationsService();
     }
+
+    @Bean(name = "fcm")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public NotificationsService getFCMPushNotificationService() {
+        return new FCMPushNotificationsService();
+    }
+
 
     @Bean(name = "ios")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
