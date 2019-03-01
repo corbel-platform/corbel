@@ -33,7 +33,7 @@ public class RestorGetRem extends AbstractRestorRem {
         RestorObject object = dao.getObject(resourceUri);
         if (object != null) {
             return Response.ok().type(object.getMediaType().toString()).entity(object.getInputStream())
-                    .header(HttpHeaders.CONTENT_LENGTH, object.getContentLength()).header(HttpHeaders.ETAG, object.getEtag()).build();
+                    .header(HttpHeaders.CONTENT_LENGTH, object.getContentLength()).header(HttpHeaders.ETAG, object.getEtag()).header(HttpHeaders.CONTENT_DISPOSITION, parameters.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)).build();
         }
         return ErrorResponseFactory.getInstance().notFound();
     }
