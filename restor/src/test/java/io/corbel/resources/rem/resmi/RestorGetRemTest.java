@@ -1,6 +1,7 @@
 package io.corbel.resources.rem.resmi;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import io.corbel.resources.rem.dao.RestorDao;
 import io.corbel.resources.rem.model.RestorObject;
@@ -14,8 +15,10 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -44,6 +47,10 @@ public class RestorGetRemTest {
     public void testGetOkResource() {
         when(requestParameters.getAcceptedMediaTypes()).thenReturn(Arrays.asList(MediaType.APPLICATION_XML));
         when(requestParameters.getRequestedDomain()).thenReturn("RequestedDomain");
+        MultivaluedMap multivaluedMap = Mockito.mock(MultivaluedMap.class);
+        when(requestParameters.getHeaders()).thenReturn(multivaluedMap);
+        when(multivaluedMap.getFirst(HttpHeaders.CONTENT_DISPOSITION)).thenReturn("any");
+
         String testEtag = "etag";
         when(daoMock.getObject(new RestorResourceUri("RequestedDomain", MediaType.APPLICATION_XML.toString(), "test", "resourceId")))
                 .thenReturn(new RestorObject(MediaType.APPLICATION_XML.toString(), entity, 100L, testEtag));
@@ -53,6 +60,7 @@ public class RestorGetRemTest {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getHeaderString(HttpHeaders.ETAG)).isEqualTo(testEtag);
         assertThat(response.getHeaderString(HttpHeaders.CONTENT_LENGTH)).isEqualTo("100");
+        assertThat(response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION)).isEqualTo("any");
     }
 
     @Test
