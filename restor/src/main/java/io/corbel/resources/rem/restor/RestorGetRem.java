@@ -25,15 +25,20 @@ public class RestorGetRem extends AbstractRestorRem {
 
     @Override
     public Response resource(String collection, ResourceId resource, RequestParameters<ResourceParameters> parameters,
-            Optional<InputStream> entity) {
+                             Optional<InputStream> entity) {
 
         RestorResourceUri resourceUri = new RestorResourceUri(parameters.getRequestedDomain(), getMediaType(parameters), collection,
                 resource.getId());
 
         RestorObject object = dao.getObject(resourceUri);
         if (object != null) {
-            return Response.ok().type(object.getMediaType().toString()).entity(object.getInputStream())
-                    .header(HttpHeaders.CONTENT_LENGTH, object.getContentLength()).header(HttpHeaders.ETAG, object.getEtag()).header(HttpHeaders.CONTENT_DISPOSITION, parameters.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)).build();
+            Response.ResponseBuilder responseBuilder = Response.ok().type(object.getMediaType().toString()).entity(object.getInputStream());
+            responseBuilder = responseBuilder.header(HttpHeaders.CONTENT_LENGTH, object.getContentLength());
+            responseBuilder = responseBuilder.header(HttpHeaders.ETAG, object.getEtag());
+            if (parameters.getHeaders() != null) {
+                responseBuilder = responseBuilder.header(HttpHeaders.CONTENT_DISPOSITION, parameters.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
+            }
+            return responseBuilder.build();
         }
         return ErrorResponseFactory.getInstance().notFound();
     }
