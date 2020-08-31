@@ -1,4 +1,4 @@
-FROM      java:8
+FROM      openjdk:8
 MAINTAINER Corbel Team @ bq <corbel-dev@bq.com>
 
 EXPOSE ${port}
