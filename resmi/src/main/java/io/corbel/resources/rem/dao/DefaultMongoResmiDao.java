@@ -565,5 +565,10 @@ public class DefaultMongoResmiDao implements MongoResmiDao {
         public ExposedFields getFields() {
             return null;
         }
+
+        @Override
+        public boolean inheritsFields() {
+            return false;
+        }
     }
 }
